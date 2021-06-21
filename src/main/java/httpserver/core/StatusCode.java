@@ -69,7 +69,7 @@ public enum StatusCode {;
         entry(INTERNAL_SERVER_ERROR, MESSAGE_INTERNAL_SERVER_ERROR),
         entry(BAD_GATEWAY, MESSAGE_BAD_GATEWAY)
     );
-    public static String getStatusMessage(final int statusCode, final String statusMessage) {
+    public static String getMessageForCode(final int statusCode, final String statusMessage) {
         if (statusMessage != null) return statusMessage;
         return codeToMessage.getOrDefault(statusCode, "Not Implemented");
     }

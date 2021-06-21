@@ -3,7 +3,6 @@ package httpserver.model;
 import httpserver.core.Chars;
 import httpserver.core.HttpInputStream;
 import httpserver.core.ResponseBody;
-import httpserver.core.StatusCode;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -17,6 +16,7 @@ import java.util.Map;
 import static httpserver.core.Headers.*;
 import static httpserver.core.ResponseBody.*;
 import static httpserver.core.StatusCode.OK;
+import static httpserver.core.StatusCode.getMessageForCode;
 import static httpserver.core.Strings.*;
 import static java.time.Instant.now;
 import static java.util.Locale.ENGLISH;
@@ -138,7 +138,7 @@ public class HttpServerExchange {
         if (!responseSent) {
             if (shouldSendHeadResponse()) {
                 final PrintWriter writer = new PrintWriter(out);
-                writer.println(protocol + SPACE + statusCode + SPACE + StatusCode.getStatusMessage(statusCode, statusMessage));
+                writer.println(protocol + SPACE + statusCode + SPACE + getMessageForCode(statusCode, statusMessage));
                 for (final var header : responseHeaders.entrySet()) {
                     writer.println(header.getKey() + HEADER_SEPARATOR + header.getValue());
                 }

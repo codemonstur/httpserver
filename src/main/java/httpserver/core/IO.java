@@ -13,6 +13,8 @@ public enum IO {;
         data[1] = (byte) in.read();
         data[2] = (byte) in.read();
         data[3] = (byte) in.read();
+        if (hasReadRequest(data, 4)) return data;
+
         int offset = 4; int b; while ((b = in.read()) != -1) {
             data[offset++] = (byte) b;
             if (hasReadRequest(data, offset)) break;

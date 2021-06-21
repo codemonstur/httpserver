@@ -1,10 +1,27 @@
-# Common server
+[![Build Status](https://travis-ci.org/codemonstur/httpserver.svg?branch=master)](https://travis-ci.org/codemonstur/httpserver)
+[![GitHub Release](https://img.shields.io/github/release/codemonstur/httpserver.svg)](https://github.com/codemonstur/httpserver/releases)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.codemonstur/httpserver/badge.svg)](http://mvnrepository.com/artifact/com.github.codemonstur/http)
+[![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
 
-A blocking server in Java.
+# HTTP server
 
-This code is not for production use.
-I wanted something simple to build test code against.
+An HTTP server built on top of common-server.
 
-The server listens on a port and assigns a separate thread to each incoming connection.
-The server can de both start()ed and stop()ped.
+This code is very simple and should compile with Graal.
+I haven't tested this yet.
 
+Features it has:
+- Basic support for HTTP/0.9
+- Basic support for HTTP/1.0
+- Basic support for HTTP/1.1
+- Some headers and status codes
+
+Missing features:
+- No SSE
+- No websockets
+- No HTTP/2
+- No output compression
+- No helpers for request parsing
+- No helpers for response sending
+- No off-the-shelf handlers for common tasks
+- No session store
