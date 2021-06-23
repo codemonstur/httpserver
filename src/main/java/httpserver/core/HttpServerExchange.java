@@ -1,8 +1,7 @@
-package httpserver.model;
+package httpserver.core;
 
-import httpserver.core.Chars;
-import httpserver.core.HttpInputStream;
-import httpserver.core.ResponseBody;
+import httpserver.util.Chars;
+import httpserver.util.LengthRestrictedInputStream;
 
 import java.io.*;
 import java.nio.charset.Charset;
@@ -17,7 +16,10 @@ import static httpserver.core.Headers.*;
 import static httpserver.core.ResponseBody.*;
 import static httpserver.core.StatusCode.OK;
 import static httpserver.core.StatusCode.getMessageForCode;
-import static httpserver.core.Strings.*;
+import static httpserver.util.Chars.EQUALS;
+import static httpserver.util.Chars.QUESTION_MARK;
+import static httpserver.util.Encoding.decodeUrl;
+import static httpserver.util.Strings.*;
 import static java.time.Instant.now;
 import static java.util.Locale.ENGLISH;
 
@@ -26,12 +28,15 @@ public class HttpServerExchange {
     private final byte[] rawRequest;
 
     private final String method;
-    private final String rawPath;
+    private final String uri;
     private final String protocol;
     private final List<String> headers;
 
     private final InputStream in;
     private final OutputStream out;
+
+    private String path;
+    private Map<String, String> queryParameters;
 
     private int statusCode = OK;
     private String statusMessage;
@@ -51,10 +56,10 @@ public class HttpServerExchange {
             final int secondSpaceOffset = firstLine.indexOf(Chars.SPACE, firstSpaceOffset + 1);
             this.method = firstLine.substring(0, firstSpaceOffset);
             if (secondSpaceOffset != -1) {
-                this.rawPath = firstLine.substring(firstSpaceOffset + 1, secondSpaceOffset);
+                this.uri = firstLine.substring(firstSpaceOffset + 1, secondSpaceOffset);
                 this.protocol = firstLine.substring(secondSpaceOffset + 1);
             } else {
-                this.rawPath = firstLine.substring(firstSpaceOffset + 1);
+                this.uri = firstLine.substring(firstSpaceOffset + 1);
                 this.protocol = HTTP_09;
             }
             if (HTTP_10.equals(protocol)) responseHeaders.put(CONNECTION, KEEP_ALIVE);
@@ -72,19 +77,49 @@ public class HttpServerExchange {
     public String getRequestMethod() {
         return method;
     }
-    public String getRequestRawPath() {
-        return rawPath;
+    public String getRequestURI() {
+        return uri;
     }
     public String getRequestProtocol() {
         return protocol;
     }
     public String getRequestHeader(final String name) {
-        final String searchName = name.toLowerCase()+HEADER_SEPARATOR;
+        final String searchName = name.toLowerCase() + HEADER_SEPARATOR;
         for (final var header : headers) {
             if (header.toLowerCase().startsWith(searchName))
                 return header.substring(name.length() + HEADER_SEPARATOR.length());
         }
         return null;
+    }
+
+    public String getRequestPath() {
+        if (path != null) return path;
+
+        final int questionOffset = uri.indexOf(QUESTION_MARK);
+        this.path = uri.substring(0, questionOffset != -1 ? questionOffset : uri.length());
+        return path;
+    }
+
+    public String getQueryParameter(final String name) {
+        if (queryParameters != null) {
+            return queryParameters.get(name);
+        }
+
+        this.queryParameters = new HashMap<>();
+        final int questionOffset = uri.indexOf(QUESTION_MARK);
+        if (questionOffset == -1) return null;
+
+        final String[] parameters = uri.substring(questionOffset + 1).split(AMPERSAND);
+        for (final String paramPair : parameters) {
+            final int equalsOffset = paramPair.indexOf(EQUALS);
+            if (equalsOffset == -1) queryParameters.put(paramPair, EMPTY);
+            else {
+                final String paramName = decodeUrl(paramPair.substring(0, equalsOffset));
+                final String paramValue = decodeUrl(paramPair.substring(equalsOffset + 1));
+                queryParameters.put(paramName, paramValue);
+            }
+        }
+        return queryParameters.get(name);
     }
 
     public int getStatusCode() {
@@ -124,7 +159,7 @@ public class HttpServerExchange {
         final String contentLength = getRequestHeader(CONTENT_LENGTH);
         if (contentLength == null) return new ByteArrayInputStream(new byte[0]);
         final long length = Long.parseLong(contentLength);
-        return new HttpInputStream(in, length);
+        return new LengthRestrictedInputStream(in, length);
     }
     public OutputStream getOutputStream() {
         return out;
@@ -154,6 +189,10 @@ public class HttpServerExchange {
             responseBody.writeTo(out);
             responseSent = true;
         }
+    }
+
+    public boolean isResponseSent() {
+        return responseSent;
     }
 
     private boolean shouldSendHeadResponse() throws IOException {

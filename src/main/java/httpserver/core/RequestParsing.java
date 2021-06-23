@@ -1,11 +1,9 @@
 package httpserver.core;
 
-import httpserver.model.HttpServerExchange;
-
 import java.io.IOException;
 import java.io.InputStream;
 
-public enum IO {;
+public enum RequestParsing {;
 
     public static byte[] readRequest(final int maxRequestSize, final InputStream in) throws IOException {
         final byte[] data = new byte[maxRequestSize];

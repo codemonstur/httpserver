@@ -1,6 +1,6 @@
 package httpserver;
 
-import httpserver.model.HttpServerExchange;
+import httpserver.core.HttpServerExchange;
 import server.Server;
 
 import java.io.IOException;
@@ -8,10 +8,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import static httpserver.core.Headers.CONNECTION;
-import static httpserver.core.IO.readRequest;
-import static httpserver.core.IO.readRequestBody;
+import static httpserver.core.RequestParsing.readRequest;
+import static httpserver.core.RequestParsing.readRequestBody;
 import static httpserver.core.StatusCode.INTERNAL_SERVER_ERROR;
-import static httpserver.core.Strings.*;
+import static httpserver.util.Strings.*;
 
 public class HttpServer {
 
@@ -50,7 +50,7 @@ public class HttpServer {
         return new Server(port, bindAddress, backlog, (in, out) -> {
             final var exchange = new HttpServerExchange(readRequest(maxRequestSize, in), in, out);
             try {
-                handler.handle(exchange);
+                handler.handleRequest(exchange);
             } catch (Exception e) {
                 exchange.setStatusCode(INTERNAL_SERVER_ERROR);
             } finally {

@@ -1,8 +1,10 @@
-package httpserver.core;
+package httpserver.util;
 
 public enum Strings {;
 
     public static final String
+        AMPERSAND = "&",
+        EMPTY = "",
         SPACE = " ",
         HEADER_SEPARATOR = ": ",
         CRLF = "\r\n",

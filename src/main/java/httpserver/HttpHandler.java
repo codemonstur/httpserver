@@ -1,9 +1,9 @@
 package httpserver;
 
-import httpserver.model.HttpServerExchange;
+import httpserver.core.HttpServerExchange;
 
 public interface HttpHandler {
 
-    void handle(HttpServerExchange exchange) throws Exception;
+    void handleRequest(HttpServerExchange exchange) throws Exception;
 
 }

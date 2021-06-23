@@ -1,14 +1,14 @@
-package httpserver.core;
+package httpserver.util;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-public class HttpInputStream extends InputStream {
+public class LengthRestrictedInputStream extends InputStream {
 
     private final InputStream in;
     private long toRead;
 
-    public HttpInputStream(final InputStream in, final long length) {
+    public LengthRestrictedInputStream(final InputStream in, final long length) {
         this.in = in;
         this.toRead = length;
     }

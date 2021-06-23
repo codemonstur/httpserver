@@ -29,3 +29,7 @@ deploy
     info [${PROJECT_NAME}] Creating github release
     hub release create -a target/${PROJECT_NAME}-${PROJECT_VERSION}.jar -F src/docs/releases/release-${PROJECT_VERSION}.txt ${PROJECT_NAME}-${PROJECT_VERSION}
     mvn clean delpoy -Prelease
+
+install
+    cd ../common-server && mvn clean install
+    mvn clean install

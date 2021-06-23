@@ -6,6 +6,9 @@ import java.io.OutputStream;
 
 public interface ResponseBody {
 
+    long getLength();
+    void writeTo(OutputStream out) throws IOException;
+
     ResponseBody EMPTY_BODY = new ResponseBody() {
         public long getLength() {
             return 0;
@@ -13,7 +16,7 @@ public interface ResponseBody {
         public void writeTo(OutputStream out) {}
     };
 
-    static ResponseBody newByteArrayBody(final byte[] data) {
+    public static ResponseBody newByteArrayBody(final byte[] data) {
         return new ResponseBody() {
             public long getLength() {
                 return data.length;
@@ -25,7 +28,7 @@ public interface ResponseBody {
         };
     }
 
-    static ResponseBody newInputStreamBody(final InputStream in, final long length) {
+    public static ResponseBody newInputStreamBody(final InputStream in, final long length) {
         return new ResponseBody() {
             public long getLength() {
                 return length;
@@ -44,6 +47,4 @@ public interface ResponseBody {
         };
     }
 
-    long getLength();
-    void writeTo(OutputStream out) throws IOException;
 }

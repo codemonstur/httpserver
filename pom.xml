@@ -135,6 +135,17 @@
                         <goals><goal>jar</goal></goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <additionalOptions>-Xdoclint:all -Xdoclint:-missing</additionalOptions>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>14</source>
+                    <target>14</target>
+                </configuration>
             </plugin>
 
         </plugins>
