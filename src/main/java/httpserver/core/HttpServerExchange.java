@@ -91,6 +91,17 @@ public class HttpServerExchange {
         }
         return null;
     }
+    public List<String> getRequestHeaders(final String name) {
+        final List<String> headers = new ArrayList<>();
+
+        final String searchName = name.toLowerCase() + HEADER_SEPARATOR;
+        for (final var header : headers) {
+            if (header.toLowerCase().startsWith(searchName))
+                headers.add(header.substring(name.length() + HEADER_SEPARATOR.length()));
+        }
+
+        return headers;
+    }
 
     public String getRequestPath() {
         if (path != null) return path;

@@ -6,6 +6,7 @@ public enum Strings {;
         AMPERSAND = "&",
         EMPTY = "",
         SPACE = " ",
+        SEMI_COLON = ";",
         HEADER_SEPARATOR = ": ",
         CRLF = "\r\n",
         HTTP_09 = "HTTP/0.9",

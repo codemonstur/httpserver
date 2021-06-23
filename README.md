@@ -15,13 +15,14 @@ Features it has:
 - Basic support for HTTP/1.0
 - Basic support for HTTP/1.1
 - Some headers and status codes
+- Parsing url encoded forms
+- Helpers for request parsing
+- Helpers for response sending
 
 Missing features:
 - No SSE
 - No websockets
 - No HTTP/2
 - No output compression
-- No helpers for request parsing
-- No helpers for response sending
 - No off-the-shelf handlers for common tasks
 - No session store
