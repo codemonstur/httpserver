@@ -43,6 +43,7 @@ public class HttpServerExchange {
     private final Map<String, String> responseHeaders = new HashMap<>();
     private ResponseBody responseBody = EMPTY_BODY;
 
+    private boolean noContentLength = false;
     private boolean responseSent = false;
 
     public HttpServerExchange(final byte[] request, final InputStream in, final OutputStream out) throws IOException {
@@ -156,6 +157,10 @@ public class HttpServerExchange {
         this.responseHeaders.remove(name);
     }
 
+    public void setNoContentLength() {
+        this.noContentLength = true;
+    }
+
     public void send(final String data, final Charset charset) {
         send(data.getBytes(charset));
     }
@@ -188,7 +193,7 @@ public class HttpServerExchange {
                 for (final var header : responseHeaders.entrySet()) {
                     writer.println(header.getKey() + HEADER_SEPARATOR + header.getValue());
                 }
-                if (methodAllowsResponseBody() && !responseHeaders.containsKey(CONTENT_LENGTH)) {
+                if (!noContentLength && methodAllowsResponseBody() && !responseHeaders.containsKey(CONTENT_LENGTH)) {
                     writer.println(CONTENT_LENGTH + HEADER_SEPARATOR + responseBody.getLength());
                 }
                 if (!responseHeaders.containsKey(DATE)) {
