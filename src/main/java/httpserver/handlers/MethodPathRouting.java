@@ -37,6 +37,10 @@ public class MethodPathRouting implements HttpHandler {
         routes.computeIfAbsent("POST", s -> new HashMap<>()).put(path, handler);
         return this;
     }
+    public MethodPathRouting patch(final String path, final HttpHandler handler) {
+        routes.computeIfAbsent("PATCH", s -> new HashMap<>()).put(path, handler);
+        return this;
+    }
     public MethodPathRouting delete(final String path, final HttpHandler handler) {
         routes.computeIfAbsent("DELETE", s -> new HashMap<>()).put(path, handler);
         return this;
