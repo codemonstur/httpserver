@@ -1,7 +1,7 @@
 <project>
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>codemonstur</groupId>
+    <groupId>com.github.codemonstur</groupId>
     <artifactId>httpserver</artifactId>
     <version>0.1.0</version>
 
