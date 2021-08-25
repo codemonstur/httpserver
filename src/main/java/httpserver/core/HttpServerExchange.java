@@ -46,12 +46,12 @@ public class HttpServerExchange {
     private boolean noContentLength = false;
     private boolean responseSent = false;
 
-    public HttpServerExchange(final byte[] request, final InputStream in, final OutputStream out) throws IOException {
+    public HttpServerExchange(final byte[] request, final int length, final InputStream in, final OutputStream out) throws IOException {
         this.rawRequest = request;
         this.in = in;
         this.out = out;
 
-        try (final var reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(request)))) {
+        try (final var reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(request, 0, length)))) {
             final String firstLine = reader.readLine();
             final int firstSpaceOffset = firstLine.indexOf(Chars.SPACE);
             final int secondSpaceOffset = firstLine.indexOf(Chars.SPACE, firstSpaceOffset + 1);
@@ -96,7 +96,7 @@ public class HttpServerExchange {
         final List<String> headers = new ArrayList<>();
 
         final String searchName = name.toLowerCase() + HEADER_SEPARATOR;
-        for (final var header : headers) {
+        for (final var header : this.headers) {
             if (header.toLowerCase().startsWith(searchName))
                 headers.add(header.substring(name.length() + HEADER_SEPARATOR.length()));
         }

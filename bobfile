@@ -5,7 +5,6 @@ version: 0.1.0
 enablePreview: false
 packaging: jar
 dependencies:
-  - project: ../common-server
   - repository: junit:junit:4.13.2
     scope: test
 

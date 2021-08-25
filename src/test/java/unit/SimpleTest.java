@@ -1,9 +1,8 @@
 package unit;
 
-import httpserver.HttpServer;
-
 import java.io.IOException;
 
+import static httpserver.HttpServer.newHttpServer;
 import static httpserver.core.Headers.CONTENT_TYPE;
 import static httpserver.core.StatusCode.CREATED;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -11,7 +10,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 public class SimpleTest {
 
     public static void main(final String... args) throws IOException {
-        new HttpServer()
+        newHttpServer()
             .handler(exchange -> {
                 exchange.setStatusCode(CREATED);
                 exchange.setResponseHeader(CONTENT_TYPE, "text/plain; charset=UTF-8");
