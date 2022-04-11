@@ -1,5 +1,7 @@
 package httpserver.core;
 
+import static httpserver.util.Functions.isNullOrEmpty;
+
 public enum Headers {;
 
     public static final String
@@ -23,6 +25,12 @@ public enum Headers {;
         LOCATION = "Location",
         SET_COOKIE = "Set-Cookie",
         USER_AGENT = "User-Agent",
-        WWW_AUTHENTICATE = "WWW-Authenticate";
+        WWW_AUTHENTICATE = "WWW-Authenticate",
+        ACCEPT_ENCODING = "Accept-Encoding",
+        CONTENT_ENCODING = "Content-Encoding";
+
+    public static boolean isContentHeader(final String header) {
+        return !isNullOrEmpty(header) && header.startsWith("Content-");
+    }
 
 }

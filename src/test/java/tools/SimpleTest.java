@@ -1,4 +1,4 @@
-package unit;
+package tools;
 
 import java.io.IOException;
 
@@ -7,7 +7,7 @@ import static httpserver.core.Headers.CONTENT_TYPE;
 import static httpserver.core.StatusCode.CREATED;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public class SimpleTest {
+public enum SimpleTest {;
 
     public static void main(final String... args) throws IOException {
         newHttpServer()

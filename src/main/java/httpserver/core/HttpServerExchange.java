@@ -167,6 +167,9 @@ public class HttpServerExchange {
     public void send(final byte[] data) {
         this.responseBody = newByteArrayBody(data);
     }
+    public void send(final byte[] data, final int offset, final int length) {
+        this.responseBody = newByteArrayBody(data, offset, length);
+    }
     public void send(final InputStream in, final long length) {
         this.responseBody = newInputStreamBody(in, length);
     }
@@ -202,7 +205,9 @@ public class HttpServerExchange {
                 writer.print(CRLF);
                 writer.flush();
             }
-            responseBody.writeTo(out);
+            if (methodAllowsResponseBody()) {
+                responseBody.writeTo(out);
+            }
             responseSent = true;
         }
     }
@@ -211,15 +216,18 @@ public class HttpServerExchange {
         return responseSent;
     }
 
+    public ResponseBody getResponseBody() {
+        return responseBody;
+    }
+    public boolean methodAllowsResponseBody() {
+        return !HEAD.equals(method);
+    }
+
     private boolean shouldSendHeadResponse() throws IOException {
         if (HTTP_09.equals(protocol)) return false;
         if (HTTP_10.equals(protocol)) return true;
         if (HTTP_11.equals(protocol)) return true;
         throw new IOException("HTTP protocol not recognised");
-    }
-
-    private boolean methodAllowsResponseBody() {
-        return !HEAD.equals(method);
     }
 
 }

@@ -17,12 +17,15 @@ public interface ResponseBody {
     };
 
     public static ResponseBody newByteArrayBody(final byte[] data) {
+        return newByteArrayBody(data, 0, data.length);
+    }
+    public static ResponseBody newByteArrayBody(final byte[] data, final int offset, final int length) {
         return new ResponseBody() {
             public long getLength() {
                 return data.length;
             }
             public void writeTo(OutputStream out) throws IOException {
-                out.write(data);
+                out.write(data, offset, length);
                 out.flush();
             }
         };
