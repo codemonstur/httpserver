@@ -5,6 +5,7 @@ import httpserver.net.ConnectionHandler;
 import httpserver.net.ConnectionListener;
 
 import java.net.InetAddress;
+import java.util.concurrent.Executor;
 
 public final class HttpServer extends ConnectionListener {
 
@@ -12,8 +13,9 @@ public final class HttpServer extends ConnectionListener {
         return new HttpServerBuilder();
     }
 
-    public HttpServer(final int port, final InetAddress bindAddress, final boolean daemon, final int backlog, final ConnectionHandler handler) {
-        super(port, bindAddress, daemon, backlog, handler);
+    public HttpServer(final int port, final InetAddress bindAddress, final boolean daemon,
+                      final int backlog, final Executor executor, final ConnectionHandler handler) {
+        super(port, bindAddress, daemon, backlog, executor, handler);
     }
 
     public int getPort() {
