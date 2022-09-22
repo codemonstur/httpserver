@@ -6,6 +6,8 @@ import httpserver.HttpServer;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import static httpserver.core.Headers.CONNECTION;
 import static httpserver.core.RequestParsing.readRequestHead;
@@ -21,12 +23,17 @@ public class HttpServerBuilder {
     private String address = "0.0.0.0";
     private HttpHandler handler;
     private int maxRequestSize = 8192;
+    private Executor executor;
 
     public HttpServerBuilder bind(final int port, final String address) {
         if (port < 0 || port > 65535)
             throw new IllegalArgumentException("port value must be between 0 and 65535");
         this.port = port;
         this.address = address;
+        return this;
+    }
+    public HttpServerBuilder executor(final Executor executor) {
+        this.executor = executor;
         return this;
     }
     public HttpServerBuilder backlog(final int backlog) {
@@ -52,7 +59,8 @@ public class HttpServerBuilder {
 
     public HttpServer build() throws UnknownHostException {
         final var bindAddress = InetAddress.getByName(address);
-        return new HttpServer(port, bindAddress, daemon, backlog, (in, out) -> {
+        final var exec = executor != null ? executor : Executors.newCachedThreadPool();
+        return new HttpServer(port, bindAddress, daemon, backlog, exec, (in, out) -> {
             final byte[] data = new byte[maxRequestSize];
             final var exchange = new HttpServerExchange(data, readRequestHead(data, in), in, out);
             try {

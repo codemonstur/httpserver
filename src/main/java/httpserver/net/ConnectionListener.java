@@ -5,6 +5,7 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Executor;
 
 public abstract class ConnectionListener {
 
@@ -13,13 +14,15 @@ public abstract class ConnectionListener {
     protected final int port;
     protected final InetAddress bindAddress;
     protected final boolean daemon;
+    protected final Executor executor;
 
     protected ConnectionListener(final int port, final InetAddress bindAddress, final boolean daemon,
-                                 final int backlog, final ConnectionHandler handler) {
+                                 final int backlog, final Executor executor, final ConnectionHandler handler) {
         this.port = port;
         this.bindAddress = bindAddress;
         this.daemon = daemon;
         this.backlog = backlog;
+        this.executor = executor;
         this.handler = handler;
     }
 
@@ -33,7 +36,7 @@ public abstract class ConnectionListener {
             while (running) {
                 try {
                     synchronized (connections) {
-                        connections.add(new Connection(daemon, serverSocket.accept(), handler));
+                        connections.add(new Connection(executor, serverSocket.accept(), handler));
                         connections.removeIf(connection -> !connection.isAlive());
                     }
                 } catch (Exception e) {}
