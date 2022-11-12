@@ -67,6 +67,7 @@ public class HttpServerExchange {
             this.headers = new ArrayList<>();
             String headerLine; while ((headerLine = reader.readLine()) != null) {
                 if (headerLine.isEmpty()) break;
+                // We do not do header concatenation, it has been deprecated in RFC 7230
                 this.headers.add(headerLine);
             }
         }
