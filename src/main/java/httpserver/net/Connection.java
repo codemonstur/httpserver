@@ -23,4 +23,8 @@ public final class Connection {
     public void stop() {
         this.running = false;
     }
+
+    public boolean isAlive() {
+        return running;
+    }
 }
