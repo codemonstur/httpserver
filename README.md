@@ -17,12 +17,12 @@ Features it has:
 - Helpers for response sending
 - Session store
 - Routing handler based on method and path
+- Compression using gz and deflate
 
 Missing features:
 - No SSE
 - No websockets
 - No HTTP/2
-- No output compression
 - No multipart form parsing
 
 ## Usage
@@ -32,12 +32,12 @@ Add the maven dependency:
     <dependency>
         <groupId>codemonstur</groupId>
         <artifactId>httpserver</artifactId>
-        <version>0.1.0</version>
+        <version>1.0.0</version>
     </dependency>
 
 Instantiate the server from somewhere (your main() probably):
 
-    new HttpServer()
+    HttpServer.newHttpServer()
         .bind(8080, "0.0.0.0")
         .handler(handler)
         .build()
@@ -73,13 +73,22 @@ An example of a handler:
 
 ## Threading
 
-Common-server provides the underlying socket handling.
-This library creates a new Thread for each incoming connection.
-It is not advised to use this HTTP server in production.
+We create a new virtual Thread for each incoming connection.
+This should be sufficient to use in production.
 
-However, the code is very simple and should be very easy to make work with Loom.
-When it comes.
+## Testing
 
-And it should also be easy to compile with Graal.
-It would be amazing if we could have both.
+There is no test harness yet.
+No benchmarks have been run.
 
+## Security
+
+- Form parsing has a Denial of Service issue.
+- There are no limits on resource use.
+- There is no protection against header injection
+
+## Graal support
+
+Graal doesn't support Java 19 yet.
+
+This library isn't very complicated, it should just work by the time Graal support for virtual threads comes along.

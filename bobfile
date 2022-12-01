@@ -1,14 +1,9 @@
 include https://raw.githubusercontent.com/codemonstur/bobfiles/master/foss-lib-github-maven
 
 vendor: com.github.codemonstur
-version: 0.1.0
-enablePreview: true
+version: 1.0.0
 packaging: jar
 release: 19
 dependencies:
   - repository: junit:junit:4.13.2
     scope: test
-
-install
-    cd ../common-server && mvn clean install
-    mvn clean install
