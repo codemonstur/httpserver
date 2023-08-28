@@ -65,7 +65,7 @@ public class HttpServerBuilder {
             final var exchange = new HttpServerExchange(data, readRequestHead(data, in), in, out);
             try {
                 handler.handleRequest(exchange);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 exchange.setStatusCode(INTERNAL_SERVER_ERROR);
             } finally {
                 discardRemainingRequestBody(exchange);

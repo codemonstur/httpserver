@@ -5,6 +5,7 @@ import httpserver.util.LengthRestrictedInputStream;
 
 import java.io.*;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -20,6 +21,7 @@ import static httpserver.util.Chars.EQUALS;
 import static httpserver.util.Chars.QUESTION_MARK;
 import static httpserver.util.Encoding.decodeUrl;
 import static httpserver.util.Strings.*;
+import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.time.Instant.now;
 import static java.util.Locale.ENGLISH;
 
@@ -173,6 +175,16 @@ public class HttpServerExchange {
     }
     public void send(final InputStream in, final long length) {
         this.responseBody = newInputStreamBody(in, length);
+    }
+
+    private static final byte[] RESPONSE_CONTINUE = "HTTP/1.1 100 Continue\r\n\r\n".getBytes(US_ASCII);
+    public void requestBodyAccepted() throws IOException {
+        if ("HTTP/1.1".equals(protocol)) {
+            final String expect = getRequestHeader(EXPECT);
+            if ("100-continue".equals(expect) ) {
+                out.write(RESPONSE_CONTINUE);
+            }
+        }
     }
 
     public InputStream getInputStream() {

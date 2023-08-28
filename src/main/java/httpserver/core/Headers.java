@@ -20,6 +20,7 @@ public enum Headers {;
         DATE = "Date",
         ETAG = "ETag",
         EXPIRES = "Expires",
+        EXPECT = "Expect",
         HOST = "Host",
         IF_NONE_MATCH = "If-None-Match",
         LOCATION = "Location",
