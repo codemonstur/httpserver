@@ -6,6 +6,13 @@ version: 1.0.1
 packaging: jar
 release: 19
 enablePreview: false
+description: An embedded HTTP server
+license:
+  name: MIT
+developer:
+  name: Jurgen Voorneveld
+  email: jegvoorneveld@gmail.com
+
 dependencies:
   - repository: junit:junit:4.13.2
     scope: test
