@@ -1,10 +1,4 @@
 1.0.1
 
-Updated versions
-Updated license
-Updated versions
-Merge branch 'master' of https://github.com/codemonstur/httpserver
-build
-Merged
-Stuff
-Added release notes, fixed build
+Fixed bug in form parsing
+Disabled preview features
