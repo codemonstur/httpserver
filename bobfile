@@ -1,9 +1,11 @@
 include https://raw.githubusercontent.com/codemonstur/bobfiles/master/foss-lib-github-maven
 
 vendor: com.github.codemonstur
-version: 1.0.0
+name: httpserver
+version: 1.0.1
 packaging: jar
 release: 19
+enablePreview: false
 dependencies:
   - repository: junit:junit:4.13.2
     scope: test

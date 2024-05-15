@@ -20,10 +20,6 @@ public final class Connection {
         });
     }
 
-    public boolean isAlive() {
-        return running;
-    }
-
     public void stop() {
         this.running = false;
     }

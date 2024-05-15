@@ -59,7 +59,7 @@ public class HttpServerBuilder {
 
     public HttpServer build() throws UnknownHostException {
         final var bindAddress = InetAddress.getByName(address);
-        final var exec = executor != null ? executor : Executors.newVirtualThreadPerTaskExecutor();
+        final var exec = executor != null ? executor : Executors.newFixedThreadPool(10);
         return new HttpServer(port, bindAddress, daemon, backlog, exec, (in, out) -> {
             final byte[] data = new byte[maxRequestSize];
             final var exchange = new HttpServerExchange(data, readRequestHead(data, in), in, out);

@@ -18,7 +18,12 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 // TODO add Content-Disposition header parsing
 // TODO test if the byte[] containing the form data is correct
 public final class FormPart {
+
     private static final byte[] CRLF_CRLF = "\r\n\r\n".getBytes(UTF_8);
+
+    private static final int
+        LENGTH_CONTENT_TYPE = "Content-Type: ".length(),
+        LENGTH_CONTENT_DISPOSITION = "Content-Disposition: ".length();
 
     private String disposition;
     private String type;
@@ -39,9 +44,9 @@ public final class FormPart {
                 if (line.isEmpty()) continue;
                 headers.add(line);
                 if (line.startsWith("Content-Type: "))
-                    type = header.substring(14);
+                    type = line.substring(LENGTH_CONTENT_TYPE);
                 if (line.startsWith("Content-Disposition: "))
-                    disposition = header.substring(21);
+                    disposition = line.substring(LENGTH_CONTENT_DISPOSITION);
             }
         }
 
