@@ -5,7 +5,7 @@
 
 # HTTP server
 
-An HTTP server built on top of common-server.
+A standalone embedded HTTP server.
 
 Features it has:
 - Support for HTTP/0.9
@@ -18,6 +18,7 @@ Features it has:
 - Session store
 - Routing handler based on method and path
 - Compression using gz and deflate
+- Compiled with Graal
 
 Missing features:
 - No SSE
@@ -30,7 +31,7 @@ Missing features:
 Add the maven dependency:
 
     <dependency>
-        <groupId>codemonstur</groupId>
+        <groupId>com.github.codemonstur</groupId>
         <artifactId>httpserver</artifactId>
         <version>1.0.2</version>
     </dependency>
