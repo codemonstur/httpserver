@@ -6,7 +6,6 @@ import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import static httpserver.core.MultipartForm.indexOf;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 // Content-Disposition header parsing can be difficult.
@@ -34,7 +33,7 @@ public final class FormPart {
     private final int end;
 
     public FormPart(final byte[] data, final int start, final int end) throws IOException {
-        middle = indexOf(data, CRLF_CRLF, start, end);
+        middle = FormParsing.indexOf(data, CRLF_CRLF, start, end);
         if (middle == -1) throw new IOException("Malformed form, no CRLFCRLF between boundaries");
 
         headers = new ArrayList<>();

@@ -1,13 +1,12 @@
 package tools;
 
 import httpserver.core.FormPart;
-import httpserver.core.MultipartForm;
 import org.junit.Test;
 
 import java.io.*;
 import java.util.List;
 
-import static httpserver.core.MultipartForm.parseForm;
+import static httpserver.core.FormParsing.parseMultipartForm;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.*;
 
@@ -37,7 +36,7 @@ public class TestFormParse {
     @Test
     public void testFormParsing() throws IOException {
         try (final var is = new ByteArrayInputStream(FORM_DATA)) {
-            final List<FormPart> formParts = parseForm(CONTENT_TYPE, FORM_DATA.length, is);
+            final List<FormPart> formParts = parseMultipartForm(CONTENT_TYPE, FORM_DATA.length, is);
             assertEquals("Invalid form parts length", 3, formParts.size());
 
             verifyFormPart(formParts, 1, "r");

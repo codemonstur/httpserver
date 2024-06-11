@@ -2,14 +2,41 @@ package httpserver.core;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+import static httpserver.core.Headers.CONTENT_TYPE;
+import static httpserver.util.Chars.EQUALS;
+import static httpserver.util.Encoding.decodeUrl;
+import static httpserver.util.Strings.AMPERSAND;
+import static httpserver.util.Strings.EMPTY;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
-public enum MultipartForm {;
+public enum FormParsing {;
 
-    public static List<FormPart> parseForm(final String contentType, final int contentLength, final InputStream is) throws IOException {
+    public static Map<String, String> parseUrlEncodedForm(final HttpServerExchange exchange, final Charset charset) throws IOException {
+        final String type = exchange.getRequestHeader(CONTENT_TYPE);
+        if (!"application/x-www-form-urlencoded".equals(type))
+            throw new IOException("Content type no url encoded form. Found '" + type + "' instead.");
+
+        final var map = new HashMap<String, String>();
+        final var fields = new String(exchange.getInputStream().readAllBytes(), charset).split(AMPERSAND);
+        for (final String paramPair : fields) {
+            final int equalsOffset = paramPair.indexOf(EQUALS);
+            if (equalsOffset == -1) map.put(paramPair, EMPTY);
+            else {
+                final String paramName = decodeUrl(paramPair.substring(0, equalsOffset));
+                final String paramValue = decodeUrl(paramPair.substring(equalsOffset + 1));
+                map.put(paramName, paramValue);
+            }
+        }
+        return map;
+    }
+
+    public static List<FormPart> parseMultipartForm(final String contentType, final int contentLength, final InputStream is) throws IOException {
         if (!contentType.startsWith("multipart/form-data")) throw new IOException("Not multipart form data");
         if (contentLength > 64 * 1024) throw new IOException("Form content too large");
 

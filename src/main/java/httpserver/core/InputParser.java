@@ -2,16 +2,18 @@ package httpserver.core;
 
 import httpserver.error.InvalidInput;
 
+import java.util.Map;
+
 import static java.lang.String.format;
 
 public enum InputParser {;
 
-    public static String getMandatoryString(final FormData formData, final String parameter) throws InvalidInput {
+    public static String getMandatoryString(final Map<String, String> formData, final String parameter) throws InvalidInput {
         final String value = formData.get(parameter);
         if (value == null) throw new InvalidInput(format("Missing parameter '%s'", parameter));
         return value;
     }
-    public static long getMandatoryLong(final FormData formData, final String parameter) throws InvalidInput {
+    public static long getMandatoryLong(final Map<String, String> formData, final String parameter) throws InvalidInput {
         try { return Long.parseLong(getMandatoryString(formData, parameter)); }
         catch (NumberFormatException e) {
             throw new InvalidInput(format("Parameter '%s' must contain a long", parameter));
