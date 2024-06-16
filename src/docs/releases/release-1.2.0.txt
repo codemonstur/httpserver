@@ -1,0 +1,9 @@
+1.2.0
+
+Added content-types
+Added headers
+Added input parsing
+Added helper methods
+Added exceptions for some response codes
+Added source address getter
+Added cache control handling
