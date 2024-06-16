@@ -10,6 +10,9 @@ import static httpserver.core.StatusCode.NOT_FOUND;
 
 public class MethodPathRouting implements HttpHandler {
 
+    public static MethodPathRouting routing() {
+        return new MethodPathRouting();
+    }
     public static MethodPathRouting methodPathRouting() {
         return new MethodPathRouting();
     }

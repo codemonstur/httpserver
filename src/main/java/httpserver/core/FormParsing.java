@@ -1,12 +1,11 @@
 package httpserver.core;
 
+import httpserver.error.InvalidInput;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static httpserver.core.Headers.CONTENT_TYPE;
 import static httpserver.util.Chars.EQUALS;
@@ -16,6 +15,17 @@ import static httpserver.util.Strings.EMPTY;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
 public enum FormParsing {;
+
+    public static Map<String, String> parseUrlEncodedForm(final HttpServerExchange exchange, final Charset charset,
+                                                          final Set<String> validParameters) throws IOException, InvalidInput {
+        final var form = parseUrlEncodedForm(exchange, charset);
+        final var formKeys = form.keySet();
+        if (!validParameters.containsAll(formKeys)) {
+            final var forbidden = formKeys.removeAll(validParameters);
+            throw new InvalidInput("Form is not allowed to have these fields: " + forbidden);
+        }
+        return form;
+    }
 
     public static Map<String, String> parseUrlEncodedForm(final HttpServerExchange exchange, final Charset charset) throws IOException {
         final String type = exchange.getRequestHeader(CONTENT_TYPE);

@@ -11,6 +11,9 @@ public interface ContentType {
     }
 
     ContentType
+        text_plain = newContentType("text/plain; charset=UTF-8"),
         text_html = newContentType("text/html; charset=UTF-8"),
-        application_json = newContentType("application/json");
+        application_json = newContentType("application/json"),
+        application_pdf = newContentType("application/pdf");
+
 }

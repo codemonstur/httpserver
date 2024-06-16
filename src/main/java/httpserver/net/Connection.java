@@ -14,9 +14,9 @@ public final class Connection {
         executor.execute(() -> {
             try (out; in; socket) {
                 while (running) {
-                    handler.handleInput(in, out);
+                    handler.handleInput(socket, in, out);
                 }
-            } catch (Exception e) {}
+            } catch (final Exception ignored) {}
         });
     }
 

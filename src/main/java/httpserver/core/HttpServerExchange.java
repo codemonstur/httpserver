@@ -4,8 +4,9 @@ import httpserver.util.Chars;
 import httpserver.util.LengthRestrictedInputStream;
 
 import java.io.*;
+import java.net.InetAddress;
+import java.net.Socket;
 import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ public class HttpServerExchange {
     private final String protocol;
     private final List<String> headers;
 
+    private final Socket socket;
     private final InputStream in;
     private final OutputStream out;
 
@@ -48,7 +50,8 @@ public class HttpServerExchange {
     private boolean noContentLength = false;
     private boolean responseSent = false;
 
-    public HttpServerExchange(final byte[] request, final int length, final InputStream in, final OutputStream out) throws IOException {
+    public HttpServerExchange(final Socket socket, final byte[] request, final int length, final InputStream in, final OutputStream out) throws IOException {
+        this.socket = socket;
         this.rawRequest = request;
         this.in = in;
         this.out = out;
@@ -75,6 +78,9 @@ public class HttpServerExchange {
         }
     }
 
+    public InetAddress getSourceIpAddress() {
+        return socket.getInetAddress();
+    }
     public byte[] getRawRequest() {
         return rawRequest;
     }
@@ -113,6 +119,10 @@ public class HttpServerExchange {
         final int questionOffset = uri.indexOf(QUESTION_MARK);
         this.path = uri.substring(0, questionOffset != -1 ? questionOffset : uri.length());
         return path;
+    }
+    public String getQueryString() {
+        final int questionOffset = uri.indexOf(QUESTION_MARK);
+        return questionOffset == -1 ? null : uri.substring(questionOffset + 1);
     }
 
     public String getQueryParameter(final String name) {

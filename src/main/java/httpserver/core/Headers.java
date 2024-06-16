@@ -28,7 +28,8 @@ public enum Headers {;
         USER_AGENT = "User-Agent",
         WWW_AUTHENTICATE = "WWW-Authenticate",
         ACCEPT_ENCODING = "Accept-Encoding",
-        CONTENT_ENCODING = "Content-Encoding";
+        CONTENT_ENCODING = "Content-Encoding",
+        PRAGMA = "Pragma";
 
     public static boolean isContentHeader(final String header) {
         return !isNullOrEmpty(header) && header.startsWith("Content-");

@@ -1,5 +1,6 @@
 package httpserver.core;
 
+import httpserver.caching.CacheControlStrategy;
 import httpserver.error.InvalidInput;
 
 import java.io.IOException;
@@ -8,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import static httpserver.caching.CacheControlStrategy.SET_NOTHING;
 import static httpserver.core.Headers.CONTENT_TYPE;
 import static httpserver.core.Headers.LOCATION;
 import static httpserver.core.StatusCode.FOUND;
@@ -18,27 +20,28 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 public final class ResponseBuilder {
 
-    public static ResponseBuilder respond(final HttpServerExchange exchange) throws InvalidInput {
+    public static ResponseBuilder respond(final HttpServerExchange exchange) {
         return new ResponseBuilder(exchange);
     }
-    public static ResponseBuilder respond(final HttpServerExchange exchange, final Function<Object, String> toJson) throws InvalidInput {
+    public static ResponseBuilder respond(final HttpServerExchange exchange, final Function<Object, String> toJson) {
         return new ResponseBuilder(exchange, toJson);
     }
 
     private final Function<Object, String> toJson;
     private final HttpServerExchange exchange;
+    private CacheControlStrategy cacheStrategy = SET_NOTHING;
     private final Map<String, String> headers = new HashMap<>();
     private int status = INTERNAL_SERVER_ERROR;
 
-    private ResponseBuilder(final HttpServerExchange exchange) throws InvalidInput {
+    private ResponseBuilder(final HttpServerExchange exchange) {
         this(exchange, null);
     }
-    private ResponseBuilder(final HttpServerExchange exchange, final Function<Object, String> toJson) throws InvalidInput {
-        this.exchange = requireNotNull(exchange, "HttpServerExchange must not be null");
+    private ResponseBuilder(final HttpServerExchange exchange, final Function<Object, String> toJson) {
+        this.exchange = exchange;
         this.toJson = toJson;
     }
 
-    public ResponseBuilder status(final int status) throws InvalidInput {
+    public ResponseBuilder status(final int status) {
         this.status = requireTrue(status >= 100 && status < 999, status, "Status must be a valid HTTP status code");
         return this;
     }
@@ -52,6 +55,10 @@ public final class ResponseBuilder {
     }
     public ResponseBuilder header(final String name, final long value) {
         this.headers.put(name, Long.toString(value));
+        return this;
+    }
+    public ResponseBuilder cache(final CacheControlStrategy strategy) {
+        this.cacheStrategy = strategy;
         return this;
     }
     public ResponseBuilder contentType(final String type) {
@@ -70,6 +77,7 @@ public final class ResponseBuilder {
 
     private void preSend() {
         exchange.setStatusCode(status);
+        cacheStrategy.apply(exchange);
         for (final var entry : headers.entrySet()) {
             exchange.setResponseHeader(entry.getKey(), entry.getValue());
         }

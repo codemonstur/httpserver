@@ -13,18 +13,18 @@ Features it has:
 - Support for HTTP/1.1
 - Common headers and status codes
 - Parsing url encoded forms
+- Parsing multipart forms
 - Helpers for request parsing
 - Helpers for response sending
 - Session store
 - Routing handler based on method and path
 - Compression using gz and deflate
-- Compiled with Graal
+- Compilable with Graal
 
 Missing features:
 - No SSE
 - No websockets
 - No HTTP/2
-- No multipart form parsing
 
 ## Usage
 
@@ -33,7 +33,7 @@ Add the maven dependency:
     <dependency>
         <groupId>com.github.codemonstur</groupId>
         <artifactId>httpserver</artifactId>
-        <version>1.0.2</version>
+        <version>1.1.0</version>
     </dependency>
 
 Instantiate the server from somewhere (your main() probably):
