@@ -2,10 +2,12 @@ package httpserver.error;
 
 import httpserver.core.HttpServerExchange;
 
+import java.io.IOException;
+
 import static httpserver.core.StatusCode.FORBIDDEN;
 import static httpserver.error.HttpError.respondError;
 
-public final class Forbidden extends Exception implements HttpError {
+public final class Forbidden extends IOException implements HttpError {
 
     private final int errorCode;
     public Forbidden() {

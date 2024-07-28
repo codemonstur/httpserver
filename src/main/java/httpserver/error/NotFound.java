@@ -7,6 +7,7 @@ import java.io.IOException;
 import static httpserver.core.StatusCode.NOT_FOUND;
 
 public final class NotFound extends IOException implements HttpError {
+
     public NotFound() {}
     public NotFound(final String message) {
         super(message);

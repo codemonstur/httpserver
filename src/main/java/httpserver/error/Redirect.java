@@ -2,11 +2,13 @@ package httpserver.error;
 
 import httpserver.core.HttpServerExchange;
 
+import java.io.IOException;
+
 import static httpserver.core.Headers.LOCATION;
 import static httpserver.core.ResponseBuilder.respond;
 import static httpserver.core.StatusCode.FOUND;
 
-public final class Redirect extends Exception implements HttpError {
+public final class Redirect extends IOException implements HttpError {
 
     private final String header;
     public Redirect(final String header) {

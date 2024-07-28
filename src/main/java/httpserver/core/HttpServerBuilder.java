@@ -2,6 +2,7 @@ package httpserver.core;
 
 import httpserver.HttpHandler;
 import httpserver.HttpServer;
+import httpserver.util.Value;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -63,14 +64,17 @@ public class HttpServerBuilder {
         return new HttpServer(port, bindAddress, daemon, backlog, exec, (socket, in, out) -> {
             final byte[] data = new byte[maxRequestSize];
             final var exchange = new HttpServerExchange(socket, data, readRequestHead(data, in), in, out);
+            final var value = new Value<Exception>();
             try {
                 handler.handleRequest(exchange);
             } catch (final Exception e) {
+                value.value = e;
                 exchange.setStatusCode(INTERNAL_SERVER_ERROR);
             } finally {
                 discardRemainingRequestBody(exchange);
                 exchange.sendResponse();
                 ifNeededCloseConnection(exchange);
+                exchange.notifyCompleteListeners(value.value);
             }
         });
     }

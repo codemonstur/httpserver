@@ -2,12 +2,16 @@ package httpserver.core;
 
 import httpserver.error.InvalidInput;
 
+import java.util.Arrays;
+import java.util.Deque;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import static httpserver.util.Functions.isNullOrEmpty;
 import static httpserver.util.Functions.rangeBound;
 import static java.lang.String.copyValueOf;
 import static java.lang.String.format;
+import static java.util.stream.Collectors.joining;
 
 public enum InputParser {;
 
@@ -41,6 +45,11 @@ public enum InputParser {;
         if (!PATTERN_VALID_EMAIL.matcher(email).matches())
             throw new InvalidInput("Parameter '" + parameter + "' does not contain a valid email address");
         return email;
+    }
+    public static <T extends Enum<T>> T getMandatoryEnum(final Map<String, String> formData, final Class<T> enumClass, final String parameter) throws InvalidInput {
+        final var param = getMandatoryString(formData, parameter);
+        if (isNullOrEmpty(param)) throw new InvalidInput(format("Missing parameter '%s'", parameter));
+        return toEnumValue(param, enumClass);
     }
 
     public static String getOptionalString(final Map<String, String> formData, final String parameter, final String defaultValue) throws InvalidInput {
@@ -115,6 +124,11 @@ public enum InputParser {;
             throw new InvalidInput("Parameter '" + parameter + "' does not contain a valid email address");
         return email;
     }
+    public static <T extends Enum<T>> T getMandatoryEnum(final HttpServerExchange exchange, final Class<T> enumClass, final String parameter) throws InvalidInput {
+        final var param = getMandatoryString(exchange, parameter);
+        if (isNullOrEmpty(param)) throw new InvalidInput(format("Missing parameter '%s'", parameter));
+        return toEnumValue(param, enumClass);
+    }
 
 
     public static String getOptionalString(final HttpServerExchange exchange, final String parameter, final String defaultValue) throws InvalidInput {
@@ -157,6 +171,18 @@ public enum InputParser {;
         if ("true".equalsIgnoreCase(value)) return true;
         if ("false".equalsIgnoreCase(value)) return false;
         throw new InvalidInput("Parameter '" + parameter + "' must contain a boolean");
+    }
+
+    private static <T extends Enum<T>> T toEnumValue(final String value, final Class<T> enumClass) throws InvalidInput {
+        try {
+            return Enum.valueOf(enumClass, value);
+        } catch (final Exception e) {
+            final String names = Arrays
+                    .stream(enumClass.getEnumConstants())
+                    .map(Object::toString)
+                    .collect(joining(", "));
+            throw new InvalidInput(format("Invalid enum '%s', possible values are: %s", value, names));
+        }
     }
 
 }

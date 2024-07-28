@@ -1,5 +1,6 @@
-package httpserver.core;
+package httpserver.session;
 
+import httpserver.core.HttpServerExchange;
 import httpserver.error.InvalidInput;
 
 import java.io.IOException;
@@ -24,9 +25,10 @@ public interface SessionStore<T> {
     T getSession(final HttpServerExchange exchange, final T defaultValue) throws IOException, InvalidInput;
     void deleteSession(final HttpServerExchange exchange) throws IOException;
 
-    public static String getValueForCookie(final HttpServerExchange exchange, final String cookieName) {
+    public static String getValueForCookie(final HttpServerExchange exchange, final String cookieName,
+                                           final String defaultValue) {
         final List<String> headers = exchange.getRequestHeaders(COOKIE);
-        if (headers == null || headers.isEmpty()) return null;
+        if (headers == null || headers.isEmpty()) return defaultValue;
 
         final String cookiePrefix = cookieName + EQUALS;
         for (final String header : headers) {
@@ -36,7 +38,7 @@ public interface SessionStore<T> {
                 }
             }
         }
-        return null;
+        return defaultValue;
     }
 
 }

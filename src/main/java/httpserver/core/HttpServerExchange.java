@@ -50,6 +50,8 @@ public class HttpServerExchange {
     private boolean noContentLength = false;
     private boolean responseSent = false;
 
+    private List<ExchangeCompleteListener> exchangeCompleteListeners;
+
     public HttpServerExchange(final Socket socket, final byte[] request, final int length, final InputStream in, final OutputStream out) throws IOException {
         this.socket = socket;
         this.rawRequest = request;
@@ -102,7 +104,7 @@ public class HttpServerExchange {
         return null;
     }
     public List<String> getRequestHeaders(final String name) {
-        final List<String> headers = new ArrayList<>();
+        final var headers = new ArrayList<String>();
 
         final String searchName = name.toLowerCase() + HEADER_SEPARATOR;
         for (final var header : this.headers) {
@@ -251,6 +253,19 @@ public class HttpServerExchange {
         if (HTTP_10.equals(protocol)) return true;
         if (HTTP_11.equals(protocol)) return true;
         throw new IOException("HTTP protocol not recognised");
+    }
+
+    public void addExchangeCompleteListener(final ExchangeCompleteListener listener) {
+        if (exchangeCompleteListeners == null) exchangeCompleteListeners = new ArrayList<>();
+        exchangeCompleteListeners.add(listener);
+    }
+
+    public void notifyCompleteListeners(final Exception exception) {
+        if (exchangeCompleteListeners != null) {
+            for (final var listener : exchangeCompleteListeners) {
+                listener.onExchangeComplete(exception, this);
+            }
+        }
     }
 
 }

@@ -33,7 +33,7 @@ Add the maven dependency:
     <dependency>
         <groupId>com.github.codemonstur</groupId>
         <artifactId>httpserver</artifactId>
-        <version>1.1.0</version>
+        <version>1.3.0</version>
     </dependency>
 
 Instantiate the server from somewhere (your main() probably):
