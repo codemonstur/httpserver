@@ -1,0 +1,6 @@
+1.3.0
+
+Added RandomId session store
+Added Token session store
+Added encoding helper functions
+Added exchange completion listener
