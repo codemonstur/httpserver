@@ -39,7 +39,7 @@ public abstract class ConnectionListener {
                         connections.add(new Connection(executor, serverSocket.accept(), handler));
                         connections.removeIf(connection -> !connection.isAlive());
                     }
-                } catch (Exception e) {}
+                } catch (final Exception e) {}
             }
         });
         thread.setDaemon(daemon);
