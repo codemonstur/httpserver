@@ -1,0 +1,5 @@
+1.4.0
+
+Moved CacheControlStrategy
+Added input parsing: getMandatoryBoolean and getOptionalEnum
+Added common handlers: logError, pathPrefix, singlePageApp, resourceHandler
