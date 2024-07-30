@@ -1,6 +1,4 @@
-package httpserver.caching;
-
-import httpserver.core.HttpServerExchange;
+package httpserver.core;
 
 import java.util.function.Consumer;
 

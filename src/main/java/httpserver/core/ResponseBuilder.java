@@ -1,20 +1,16 @@
 package httpserver.core;
 
-import httpserver.caching.CacheControlStrategy;
-import httpserver.error.InvalidInput;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import static httpserver.caching.CacheControlStrategy.SET_NOTHING;
+import static httpserver.core.CacheControlStrategy.SET_NOTHING;
 import static httpserver.core.Headers.CONTENT_TYPE;
 import static httpserver.core.Headers.LOCATION;
 import static httpserver.core.StatusCode.FOUND;
 import static httpserver.core.StatusCode.INTERNAL_SERVER_ERROR;
-import static httpserver.util.Functions.requireNotNull;
 import static httpserver.util.Functions.requireTrue;
 import static java.nio.charset.StandardCharsets.UTF_8;
 

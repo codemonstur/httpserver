@@ -1,5 +1,6 @@
 package httpserver.core;
 
+import com.sun.source.tree.ReturnTree;
 import httpserver.error.InvalidInput;
 
 import java.util.Arrays;
@@ -33,6 +34,12 @@ public enum InputParser {;
         catch (final NumberFormatException e) {
             throw new InvalidInput(format("Parameter '%s' must contain a long", parameter));
         }
+    }
+    public static boolean getMandatoryBoolean(final Map<String, String> formData, final String parameter) throws InvalidInput {
+        final String value = getMandatoryString(formData, parameter);
+        if ("true".equalsIgnoreCase(value)) return true;
+        if ("false".equalsIgnoreCase(value)) return false;
+        throw new InvalidInput(format("Parameter '%s' must contain a boolean", parameter));
     }
     public static double getMandatoryDouble(final Map<String, String> formData, final String parameter) throws InvalidInput {
         try { return Double.parseDouble(getMandatoryString(formData, parameter)); }
@@ -93,12 +100,16 @@ public enum InputParser {;
         if ("false".equalsIgnoreCase(value)) return false;
         throw new InvalidInput("Parameter '" + parameter + "' must contain a boolean");
     }
+    public static <T extends Enum<T>> T getOptionalEnum(final Map<String, String> formData, final Class<T> enumClass, final String parameter, final T defaultValue) throws InvalidInput {
+        final var param = formData.get(parameter);
+        return isNullOrEmpty(param) ? defaultValue : toEnumValue(param, enumClass);
+    }
 
 
     public static String getMandatoryString(final HttpServerExchange exchange, final String parameter) throws InvalidInput {
-        final String param = exchange.getQueryParameter(parameter);
-        if (param == null || param.isEmpty()) throw new InvalidInput(format("Missing parameter '%s'", parameter));
-        return param;
+        final String value = exchange.getQueryParameter(parameter);
+        if (value == null || value.isEmpty()) throw new InvalidInput(format("Missing parameter '%s'", parameter));
+        return value;
     }
     public static int getMandatoryInteger(final HttpServerExchange exchange, final String parameter) throws InvalidInput {
         try { return Integer.parseInt(getMandatoryString(exchange, parameter)); }
@@ -111,6 +122,13 @@ public enum InputParser {;
         catch (final NumberFormatException e) {
             throw new InvalidInput(format("Parameter '%s' must contain a long", parameter));
         }
+    }
+    public static boolean getMandatoryBoolean(final HttpServerExchange exchange, final String parameter) throws InvalidInput {
+        final String value = exchange.getQueryParameter(parameter);
+        if (value == null) throw new InvalidInput(format("Missing parameter '%s'", parameter));
+        if ("true".equalsIgnoreCase(value)) return true;
+        if ("false".equalsIgnoreCase(value)) return false;
+        throw new InvalidInput(format("Parameter '%s' must contain a boolean", parameter));
     }
     public static double getMandatoryDouble(final HttpServerExchange exchange, final String parameter) throws InvalidInput {
         try { return Double.parseDouble(getMandatoryString(exchange, parameter)); }
@@ -171,6 +189,10 @@ public enum InputParser {;
         if ("true".equalsIgnoreCase(value)) return true;
         if ("false".equalsIgnoreCase(value)) return false;
         throw new InvalidInput("Parameter '" + parameter + "' must contain a boolean");
+    }
+    public static <T extends Enum<T>> T getOptionalEnum(final HttpServerExchange exchange, final Class<T> enumClass, final String parameter, final T defaultValue) throws InvalidInput {
+        final var param = exchange.getQueryParameter(parameter);
+        return isNullOrEmpty(param) ? defaultValue : toEnumValue(param, enumClass);
     }
 
     private static <T extends Enum<T>> T toEnumValue(final String value, final Class<T> enumClass) throws InvalidInput {
