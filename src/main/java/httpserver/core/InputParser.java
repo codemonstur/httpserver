@@ -50,7 +50,7 @@ public enum InputParser {;
     public static String getMandatoryEmailAddress(final Map<String, String> formData, final String parameter) throws InvalidInput {
         final var email = getMandatoryString(formData, parameter);
         if (!PATTERN_VALID_EMAIL.matcher(email).matches())
-            throw new InvalidInput("Parameter '" + parameter + "' does not contain a valid email address");
+            throw new InvalidInput(format("Parameter '%s' does not contain a valid email address", parameter));
         return email;
     }
     public static <T extends Enum<T>> T getMandatoryEnum(final Map<String, String> formData, final Class<T> enumClass, final String parameter) throws InvalidInput {
@@ -98,7 +98,7 @@ public enum InputParser {;
         if (value == null) return defaultValue;
         if ("true".equalsIgnoreCase(value)) return true;
         if ("false".equalsIgnoreCase(value)) return false;
-        throw new InvalidInput("Parameter '" + parameter + "' must contain a boolean");
+        throw new InvalidInput(format("Parameter '%s' must contain a boolean", parameter));
     }
     public static <T extends Enum<T>> T getOptionalEnum(final Map<String, String> formData, final Class<T> enumClass, final String parameter, final T defaultValue) throws InvalidInput {
         final var param = formData.get(parameter);
@@ -139,7 +139,7 @@ public enum InputParser {;
     public static String getMandatoryEmailAddress(final HttpServerExchange exchange, final String parameter) throws InvalidInput {
         final var email = getMandatoryString(exchange, parameter);
         if (!PATTERN_VALID_EMAIL.matcher(email).matches())
-            throw new InvalidInput("Parameter '" + parameter + "' does not contain a valid email address");
+            throw new InvalidInput(format("Parameter '%s' does not contain a valid email address", parameter));
         return email;
     }
     public static <T extends Enum<T>> T getMandatoryEnum(final HttpServerExchange exchange, final Class<T> enumClass, final String parameter) throws InvalidInput {
@@ -188,7 +188,7 @@ public enum InputParser {;
         if (value == null) return defaultValue;
         if ("true".equalsIgnoreCase(value)) return true;
         if ("false".equalsIgnoreCase(value)) return false;
-        throw new InvalidInput("Parameter '" + parameter + "' must contain a boolean");
+        throw new InvalidInput(format("Parameter '%s' must contain a boolean", parameter));
     }
     public static <T extends Enum<T>> T getOptionalEnum(final HttpServerExchange exchange, final Class<T> enumClass, final String parameter, final T defaultValue) throws InvalidInput {
         final var param = exchange.getQueryParameter(parameter);
