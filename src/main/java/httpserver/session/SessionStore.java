@@ -12,10 +12,10 @@ import static httpserver.util.Strings.SEMI_COLON;
 
 public interface SessionStore<T> {
 
-    default String getSessionCookieName() {
+    default String sessionCookieName() {
         return "session";
     }
-    default String getSessionCookieConfiguration() {
+    default String sessionCookieConfiguration() {
         return "; Path=/; Secure; HttpOnly; SameSite=strict";
     }
 

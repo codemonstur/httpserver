@@ -17,7 +17,7 @@ public interface TokenSessionStore<T> extends SessionStore<T> {
 
     default void setSession(final HttpServerExchange exchange, final T session) {
         final String sessionValue = toSessionValue(session);
-        exchange.setResponseHeader(SET_COOKIE, getSessionCookieName() + "=" + sessionValue + getSessionCookieConfiguration());
+        exchange.setResponseHeader(SET_COOKIE, sessionCookieName() + "=" + sessionValue + sessionCookieConfiguration());
     }
     default boolean existsSession(final HttpServerExchange exchange) {
         try {
@@ -32,14 +32,14 @@ public interface TokenSessionStore<T> extends SessionStore<T> {
         return session;
     }
     default T getSession(final HttpServerExchange exchange, final T defaultValue) throws IOException {
-        final String sessionValue = getValueForCookie(exchange, getSessionCookieName(), null);
+        final String sessionValue = getValueForCookie(exchange, sessionCookieName(), null);
         if (sessionValue == null) return defaultValue;
         return fromSessionValue(sessionValue);
     }
     default void deleteSession(final HttpServerExchange exchange) {
-        final String sessionId = getValueForCookie(exchange, getSessionCookieName(), null);
+        final String sessionId = getValueForCookie(exchange, sessionCookieName(), null);
         if (sessionId == null) return;
-        exchange.setResponseHeader(SET_COOKIE, getSessionCookieName() + "=" + getSessionCookieConfiguration());
+        exchange.setResponseHeader(SET_COOKIE, sessionCookieName() + "=" + sessionCookieConfiguration());
     }
 
     byte[] sessionToJson(T session, Charset charset);

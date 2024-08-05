@@ -27,7 +27,7 @@ public interface RandomIdStore<T> extends SessionStore<T> {
         final String sessionId = encodeHex(bytes);
 
         storeSession(sessionId, session);
-        exchange.setResponseHeader(SET_COOKIE, getSessionCookieName() + "=" + sessionId + getSessionCookieConfiguration());
+        exchange.setResponseHeader(SET_COOKIE, sessionCookieName() + "=" + sessionId + sessionCookieConfiguration());
     }
 
     default boolean existsSession(final HttpServerExchange exchange) {
@@ -45,18 +45,18 @@ public interface RandomIdStore<T> extends SessionStore<T> {
     }
 
     default T getSession(final HttpServerExchange exchange, final T defaultValue) throws IOException {
-        final String sessionId = getValueForCookie(exchange, getSessionCookieName(), null);
+        final String sessionId = getValueForCookie(exchange, sessionCookieName(), null);
         if (sessionId == null) return defaultValue;
 
         return retrieveSession(sessionId);
     }
 
     default void deleteSession(final HttpServerExchange exchange) throws IOException {
-        final String sessionId = getValueForCookie(exchange, getSessionCookieName(), null);
+        final String sessionId = getValueForCookie(exchange, sessionCookieName(), null);
         if (sessionId == null) return;
 
         deleteSession(sessionId);
-        exchange.setResponseHeader(SET_COOKIE, getSessionCookieName() + "=" + getSessionCookieConfiguration());
+        exchange.setResponseHeader(SET_COOKIE, sessionCookieName() + "=" + sessionCookieConfiguration());
     }
 
 }

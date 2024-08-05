@@ -14,8 +14,7 @@ import java.util.function.Consumer;
 
 import static httpserver.core.CacheControlStrategy.NEVER_CACHE;
 import static httpserver.core.CacheControlStrategy.STORE_BUT_CHECK_SERVER;
-import static httpserver.core.ContentType.text_html;
-import static httpserver.core.ContentType.toContentType;
+import static httpserver.core.ContentType.*;
 import static httpserver.core.Headers.*;
 import static httpserver.core.ResponseBuilder.respond;
 import static httpserver.core.StatusCode.*;
@@ -26,6 +25,21 @@ import static httpserver.util.Encoding.sha256;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
 public enum Common {;
+
+    public static HttpHandler printText(final String text) {
+        return exchange -> respond(exchange).status(OK).contentType(text_plain).send(text);
+    }
+
+    public static HttpHandler printVersion() {
+        final var version = Common.class.getPackage().getImplementationVersion();
+        return exchange -> respond(exchange).status(OK).contentType(text_plain).send(version);
+    }
+
+    public static HttpHandler printBanner() {
+        final var manifest = Common.class.getPackage();
+        final var banner = manifest.getImplementationTitle() + " v" + manifest.getImplementationVersion();
+        return exchange -> respond(exchange).status(OK).contentType(text_plain).send(banner);
+    }
 
     public static HttpHandler logError(final Consumer<Exception> onException, final Consumer<Error> onError, final HttpHandler next) {
         return exchange -> {
