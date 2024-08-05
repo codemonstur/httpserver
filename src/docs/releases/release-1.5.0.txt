@@ -1,0 +1,4 @@
+1.5.0
+
+Added printText, printVersion and printBanner handler
+Added SessionMethodPathRouting
