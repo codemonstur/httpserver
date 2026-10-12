@@ -16,7 +16,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 
 public class ServerSentEvents implements HttpHandler {
 
-    private final Timer timer = new Timer();
+    private final Timer timer = new Timer("server-sent-events-keep-alive", true);
     private final List<PrintWriter> connections = new ArrayList<>();
 
     public ServerSentEvents() {
@@ -37,17 +37,44 @@ public class ServerSentEvents implements HttpHandler {
         exchange.setNoContentLength();
         exchange.sendResponse();
 
+        final var connection = new PrintWriter(exchange.getOutputStream());
         synchronized (connections) {
-            connections.add(new PrintWriter(exchange.getOutputStream()));
+            connections.add(connection);
+        }
+        try {
+            // The connection belongs to this stream now: hold it (and its worker) open until the
+            // client leaves, instead of letting the keep-alive loop try to parse whatever the
+            // event source sends next as a new request.
+            exchange.awaitClientDisconnect();
+        } finally {
+            synchronized (connections) {
+                connections.remove(connection);
+            }
         }
     }
 
     public void sendMessage(final String message) {
-        sendMessage(null, message);
+        sendMessage(null, null, message);
     }
     public void sendMessage(final String id, final String message) {
-        final var event = newSseEvent(id, null, message);
+        sendMessage(id, null, message);
+    }
+    public void sendMessage(final String id, final String type, final String message) {
+        broadcast(newSseEvent(id, type, message));
+    }
 
+    private void broadcast(final String event) {
+        synchronized (connections) {
+            final var it = connections.iterator();
+            while (it.hasNext()) {
+                final var connection = it.next();
+                connection.print(event);
+                connection.flush();
+                // PrintWriter never throws, so its error flag is the only way to notice a client
+                // that went away without us noticing, and to stop accumulating dead writers.
+                if (connection.checkError()) it.remove();
+            }
+        }
     }
 
     private static TimerTask newKeepAliveTask(final List<PrintWriter> connections) {
@@ -57,12 +84,9 @@ public class ServerSentEvents implements HttpHandler {
                     final var it = connections.iterator();
                     while (it.hasNext()) {
                         final var connection = it.next();
-                        final var event = newKeepAliveEvent();
-                        try {
-                            connection.print(event);
-                        } catch (Exception e) {
-                            it.remove();
-                        }
+                        connection.print(newKeepAliveEvent());
+                        connection.flush();
+                        if (connection.checkError()) it.remove();
                     }
                 }
             }
@@ -74,11 +98,17 @@ public class ServerSentEvents implements HttpHandler {
              + "\n";
     }
 
+    /**
+     * Every line of the payload has to be its own data field, otherwise the client only sees the
+     * first one and drops the rest of the message.
+     */
     private static String newSseEvent(final String id, final String type, final String data) {
         final StringBuilder message = new StringBuilder();
         message.append("id: ").append(id == null ? currentTimeMillis() : id).append("\n");
-        if (type != null) message.append("event: ").append("\n");
-        if (data != null) message.append("data: ").append(data).append("\n");
+        if (type != null) message.append("event: ").append(type).append("\n");
+        if (data != null)
+            for (final String line : data.split("\r\n|\n|\r"))
+                message.append("data: ").append(line).append("\n");
         return message.append("\n").toString();
     }
 

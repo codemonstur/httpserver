@@ -63,7 +63,7 @@ public class CacheControlStrategyTest {
         IMMUTABLE.apply(exchange);
 
         assertEquals("public, max-age=315569260, immutable", exchange.getResponseHeader(CACHE_CONTROL));
-        assertEquals("Fri, 1 Jan 2100 00:00:00 GMT", exchange.getResponseHeader(EXPIRES));
+        assertEquals("Fri, 01 Jan 2100 00:00:00 GMT", exchange.getResponseHeader(EXPIRES));
         assertNull(exchange.getResponseHeader(PRAGMA));
     }
 

@@ -2,7 +2,9 @@ package httpserver.core;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -26,7 +28,9 @@ public final class ResponseBuilder {
     private final Function<Object, String> toJson;
     private final HttpServerExchange exchange;
     private CacheControlStrategy cacheStrategy = SET_NOTHING;
-    private final Map<String, String> headers = new HashMap<>();
+    // A list per name, because a response may legitimately carry the same header more than once
+    // (Set-Cookie above all) and every value has to survive.
+    private final Map<String, List<String>> headers = new LinkedHashMap<>();
     private int status = INTERNAL_SERVER_ERROR;
 
     private ResponseBuilder(final HttpServerExchange exchange) {
@@ -42,32 +46,34 @@ public final class ResponseBuilder {
         return this;
     }
     public ResponseBuilder header(final String name, final String value) {
-        this.headers.put(name, value);
+        this.headers.computeIfAbsent(name, k -> new ArrayList<>()).add(value);
         return this;
     }
     public ResponseBuilder header(final String name, final int value) {
-        this.headers.put(name, Integer.toString(value));
-        return this;
+        return header(name, Integer.toString(value));
     }
     public ResponseBuilder header(final String name, final long value) {
-        this.headers.put(name, Long.toString(value));
-        return this;
+        return header(name, Long.toString(value));
     }
     public ResponseBuilder cache(final CacheControlStrategy strategy) {
         this.cacheStrategy = strategy;
         return this;
     }
     public ResponseBuilder contentType(final String type) {
-        this.headers.put(CONTENT_TYPE, type);
-        return this;
+        return singleValuedHeader(CONTENT_TYPE, type);
     }
     public ResponseBuilder contentType(final ContentType type) {
-        this.headers.put(CONTENT_TYPE, type.toString());
-        return this;
+        return contentType(type.toString());
     }
     public ResponseBuilder redirect(final String url) {
         this.status = FOUND;
-        this.headers.put(LOCATION, url);
+        return singleValuedHeader(LOCATION, url);
+    }
+    /** Replaces the value of a header; a null value clears it, which is what a missing header means. */
+    private ResponseBuilder singleValuedHeader(final String name, final String value) {
+        final var values = new ArrayList<String>();
+        if (value != null) values.add(value);
+        this.headers.put(name, values);
         return this;
     }
 
@@ -75,7 +81,12 @@ public final class ResponseBuilder {
         exchange.setStatusCode(status);
         cacheStrategy.apply(exchange);
         for (final var entry : headers.entrySet()) {
-            exchange.setResponseHeader(entry.getKey(), entry.getValue());
+            // Replaced rather than appended, so the builder always wins over an earlier value
+            // for the same name, while several builder values for it all get written.
+            exchange.removeResponseHeader(entry.getKey());
+            for (final String value : entry.getValue()) {
+                exchange.addResponseHeader(entry.getKey(), value);
+            }
         }
     }
     public void send(final String data) {

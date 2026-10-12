@@ -31,13 +31,15 @@ public enum Common {;
     }
 
     public static HttpHandler printVersion() {
-        final var version = Common.class.getPackage().getImplementationVersion();
+        final var version = Functions.orDefault(Common.class.getPackage().getImplementationVersion(), "unknown");
         return exchange -> respond(exchange).status(OK).contentType(text_plain).send(version);
     }
 
     public static HttpHandler printBanner() {
         final var manifest = Common.class.getPackage();
-        final var banner = manifest.getImplementationTitle() + " v" + manifest.getImplementationVersion();
+        final var title = Functions.orDefault(manifest.getImplementationTitle(), "unknown");
+        final var version = Functions.orDefault(manifest.getImplementationVersion(), "unknown");
+        final var banner = title + " v" + version;
         return exchange -> respond(exchange).status(OK).contentType(text_plain).send(banner);
     }
 
@@ -67,8 +69,7 @@ public enum Common {;
         final String etag = String.format("\"%s\"", encodeHex(sha256(content, UTF_8)));
 
         return exchange -> {
-            final var requestEtag = exchange.getRequestHeader(IF_NONE_MATCH);
-            if (etag.equals(requestEtag)) {
+            if (matchesEtag(exchange, etag)) {
                 respond(exchange).status(NOT_MODIFIED).contentType(text_html).send();
             } else {
                 respond(exchange).status(OK).contentType(text_html)
@@ -78,8 +79,23 @@ public enum Common {;
         };
     }
 
+    /**
+     * If-None-Match uses the weak comparison function, and the header may hold a list of tags or
+     * the "*" wildcard, so a plain equality check would miss most conditional requests.
+     */
     public static boolean matchesEtag(final HttpServerExchange request, final String etag) {
-        return (etag.equals(request.getRequestHeader(IF_NONE_MATCH)));
+        final String header = request.getRequestHeader(IF_NONE_MATCH);
+        if (header == null) return false;
+        if ("*".equals(header.trim())) return true;
+
+        final String expected = withoutWeakPrefix(etag);
+        for (final String candidate : header.split(",")) {
+            if (withoutWeakPrefix(candidate.trim()).equals(expected)) return true;
+        }
+        return false;
+    }
+    private static String withoutWeakPrefix(final String tag) {
+        return tag.startsWith("W/") ? tag.substring(2) : tag;
     }
 
     public static void checkEtag(final String etag, final HttpServerExchange exchange, final HttpHandler next) throws Exception {
@@ -130,16 +146,16 @@ public enum Common {;
     public static HttpHandler resourceHandler(final String wwwroot, final HttpHandler fallback) {
         final var etagMap = new HashMap<String, String>();
         return exchange -> {
-            final var requestURI = exchange.getRequestURI();
-            final var data = loadResource(wwwroot, requestURI, null);
+            // The request path, without the query string: "/style.css?v=1" is still style.css.
+            final var requestPath = exchange.getRequestPath();
+            final var data = loadResource(wwwroot, requestPath, null);
 
             if (data == null) fallback.handleRequest(exchange);
             else {
-                final var type = toContentType(requestURI);
-                final var etag = String.format("\"%s\"", etagMap.computeIfAbsent(requestURI, k-> encodeHex(sha256(data))));
+                final var type = toContentType(requestPath);
+                final var etag = String.format("\"%s\"", etagMap.computeIfAbsent(requestPath, k-> encodeHex(sha256(data))));
 
-                final var requestEtag = exchange.getRequestHeader(IF_NONE_MATCH);
-                if (etag.equals(requestEtag)) {
+                if (matchesEtag(exchange, etag)) {
                     respond(exchange).status(NOT_MODIFIED).cache(STORE_BUT_CHECK_SERVER).contentType(type).send();
                 } else {
                     respond(exchange).status(OK).cache(STORE_BUT_CHECK_SERVER).contentType(type).header(ETAG, etag).send(data);
@@ -148,11 +164,17 @@ public enum Common {;
         };
     }
     private static byte[] loadResource(final String prefix, final String requestURI, final byte[] defaultValue) throws IOException {
-        if (requestURI.isBlank() || requestURI.endsWith("/") || requestURI.endsWith("\\")) return defaultValue;
-        final var requestedPath = Path.of(prefix, requestURI).normalize().toString().replace('\\', '/');
-        if (!requestedPath.startsWith(prefix)) return defaultValue;
+        if (requestURI == null || requestURI.isBlank()
+                || requestURI.endsWith("/") || requestURI.endsWith("\\")) return defaultValue;
 
-        try (final InputStream in = Functions.class.getResourceAsStream(requestedPath)) {
+        // Compare resolved paths, not strings: a plain startsWith(prefix) lets "/../<prefix>-other/x"
+        // escape the resource root, because "wwwroot-other" starts with "wwwroot".
+        final var root = Path.of(prefix).normalize();
+        final var relative = requestURI.startsWith("/") ? requestURI.substring(1) : requestURI;
+        final var requestedPath = root.resolve(relative).normalize();
+        if (!requestedPath.startsWith(root)) return defaultValue;
+
+        try (final InputStream in = Functions.class.getResourceAsStream(requestedPath.toString().replace('\\', '/'))) {
             if (in == null) return defaultValue;
             return in.readAllBytes();
         }

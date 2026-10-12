@@ -55,12 +55,21 @@ public class LengthRestrictedInputStream extends InputStream {
         return bytesRead;
     }
 
+    /**
+     * How many bytes of the declared body are still unread. Used to decide whether draining the
+     * body is going to block at all.
+     */
+    public long remaining() {
+        return toRead;
+    }
+
     @Override
     public int read() throws IOException {
         if (toRead <= 0) return -1;
 
-        toRead--;
-        return in.read();
+        final int b = in.read();
+        if (b != -1) toRead--;
+        return b;
     }
 
     @Override

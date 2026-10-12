@@ -29,10 +29,12 @@ public enum Headers {;
         WWW_AUTHENTICATE = "WWW-Authenticate",
         ACCEPT_ENCODING = "Accept-Encoding",
         CONTENT_ENCODING = "Content-Encoding",
-        PRAGMA = "Pragma";
+        PRAGMA = "Pragma",
+        TRANSFER_ENCODING = "Transfer-Encoding",
+        VARY = "Vary";
 
     public static boolean isContentHeader(final String header) {
-        return !isNullOrEmpty(header) && header.startsWith("Content-");
+        return !isNullOrEmpty(header) && header.regionMatches(true, 0, "Content-", 0, "Content-".length());
     }
 
 }

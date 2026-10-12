@@ -16,15 +16,16 @@ Features it has:
 - Parsing multipart forms
 - Helpers for request parsing
 - Helpers for response sending
+- Server sent events
 - Session store
 - Routing handler based on method and path
 - Compression using gz and deflate
 - Compilable with Graal
 
 Missing features:
-- No SSE
 - No websockets
 - No HTTP/2
+- No chunked transfer encoding
 
 ## Usage
 
@@ -74,7 +75,14 @@ An example of a handler:
 
 ## Threading
 
-We create a new virtual Thread for each incoming connection.
+Each connection is handled by a worker thread taken from a cached thread pool, so the number of
+threads grows and shrinks with the number of connections instead of being fixed. A worker is only
+held while a request is being handled or while a connection waits for the next request on a
+keep-alive connection; that wait is bounded by `keepAliveTimeout` (60 seconds by default), after
+which the idle connection is closed and its worker released. Server sent event handlers take their
+connection over and keep their worker for as long as the client stays connected.
+
+Because the library targets Java 17, it uses platform threads rather than virtual threads.
 This should be sufficient to use in production.
 
 ## Testing

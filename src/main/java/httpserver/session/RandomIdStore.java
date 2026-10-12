@@ -4,7 +4,7 @@ import httpserver.core.HttpServerExchange;
 import httpserver.error.Forbidden;
 
 import java.io.IOException;
-import java.util.Random;
+import java.security.SecureRandom;
 
 import static httpserver.core.Headers.SET_COOKIE;
 import static httpserver.session.SessionStore.getValueForCookie;
@@ -16,7 +16,12 @@ public interface RandomIdStore<T> extends SessionStore<T> {
         return 32;
     }
 
-    Random prngSessionId();
+    /**
+     * Session identifiers are credentials: they must come from a cryptographically strong
+     * generator. A plain java.util.Random is seeded from the clock and its output can be
+     * reconstructed, which would let an attacker guess other users' session ids.
+     */
+    SecureRandom prngSessionId();
     void storeSession(String sessionId, T session) throws IOException;
     T retrieveSession(String sessionId) throws IOException;
     void deleteSession(String sessionId) throws IOException;
@@ -27,7 +32,8 @@ public interface RandomIdStore<T> extends SessionStore<T> {
         final String sessionId = encodeHex(bytes);
 
         storeSession(sessionId, session);
-        exchange.setResponseHeader(SET_COOKIE, sessionCookieName() + "=" + sessionId + sessionCookieConfiguration());
+        // Added rather than set: a response can carry other Set-Cookie headers too.
+        exchange.addResponseHeader(SET_COOKIE, sessionCookieName() + "=" + sessionId + sessionCookieConfiguration());
     }
 
     default boolean existsSession(final HttpServerExchange exchange) {
@@ -56,7 +62,7 @@ public interface RandomIdStore<T> extends SessionStore<T> {
         if (sessionId == null) return;
 
         deleteSession(sessionId);
-        exchange.setResponseHeader(SET_COOKIE, sessionCookieName() + "=" + sessionCookieConfiguration());
+        exchange.addResponseHeader(SET_COOKIE, sessionCookieName() + "=" + sessionCookieConfiguration());
     }
 
 }

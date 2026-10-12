@@ -239,7 +239,9 @@ public class HttpServerExchangeTest {
         final String response = out.toString(UTF_8);
         assertTrue(response.startsWith("HTTP/1.1 200 Ok"));
         assertFalse(response.contains("hello"));
-        assertFalse(response.contains(CONTENT_LENGTH));
+        // RFC 9110 9.3.2: a HEAD response carries the Content-Length the equivalent GET would
+        // have sent, it just does not send the body itself.
+        assertTrue(response.contains(CONTENT_LENGTH + ": 5"));
     }
 
     @Test

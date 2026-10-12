@@ -5,6 +5,7 @@ import httpserver.error.Forbidden;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.security.MessageDigest;
 
 import static httpserver.core.Headers.SET_COOKIE;
 import static httpserver.session.SessionStore.getValueForCookie;
@@ -17,7 +18,9 @@ public interface TokenSessionStore<T> extends SessionStore<T> {
 
     default void setSession(final HttpServerExchange exchange, final T session) {
         final String sessionValue = toSessionValue(session);
-        exchange.setResponseHeader(SET_COOKIE, sessionCookieName() + "=" + sessionValue + sessionCookieConfiguration());
+        // Added rather than set: a response can carry other Set-Cookie headers, and replacing
+        // the whole header would silently drop them.
+        exchange.addResponseHeader(SET_COOKIE, sessionCookieName() + "=" + sessionValue + sessionCookieConfiguration());
     }
     default boolean existsSession(final HttpServerExchange exchange) {
         try {
@@ -39,7 +42,7 @@ public interface TokenSessionStore<T> extends SessionStore<T> {
     default void deleteSession(final HttpServerExchange exchange) {
         final String sessionId = getValueForCookie(exchange, sessionCookieName(), null);
         if (sessionId == null) return;
-        exchange.setResponseHeader(SET_COOKIE, sessionCookieName() + "=" + sessionCookieConfiguration());
+        exchange.addResponseHeader(SET_COOKIE, sessionCookieName() + "=" + sessionCookieConfiguration());
     }
 
     byte[] sessionToJson(T session, Charset charset);
@@ -57,8 +60,12 @@ public interface TokenSessionStore<T> extends SessionStore<T> {
     }
 
     private static boolean isValidSession(final String[] encodedSession, final byte[] key) {
-        return encodedSession != null && encodedSession.length == 2
-            && encodedSession[1].equals(toVerification(key, encodedSession[0]));
+        if (encodedSession == null || encodedSession.length != 2) return false;
+        // Constant time comparison: an equals() here leaks how many signature bytes matched,
+        // which is enough to forge a valid session one byte at a time.
+        final byte[] expected = toVerification(key, encodedSession[0]).getBytes(UTF_8);
+        final byte[] actual = encodedSession[1].getBytes(UTF_8);
+        return MessageDigest.isEqual(expected, actual);
     }
     private static String toVerification(final byte[] key, final String data) {
         return encodeBase64Url(hmacSha256(data.getBytes(UTF_8), key));

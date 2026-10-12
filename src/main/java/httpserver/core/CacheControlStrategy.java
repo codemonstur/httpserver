@@ -14,7 +14,9 @@ public enum CacheControlStrategy {
     STORE_BUT_CHECK_SERVER(exchange -> exchange.setResponseHeader(CACHE_CONTROL, "public, no-cache, max-age=0, must-revalidate")),
     IMMUTABLE(exchange -> {
         exchange.setResponseHeader(CACHE_CONTROL, "public, max-age=315569260, immutable");
-        exchange.setResponseHeader(EXPIRES, "Fri, 1 Jan 2100 00:00:00 GMT");
+        // The day has to be zero padded (IMF-fixdate); "1 Jan" is not a valid HTTP date and
+        // strict caches and proxies reject it.
+        exchange.setResponseHeader(EXPIRES, "Fri, 01 Jan 2100 00:00:00 GMT");
     });
 
     private final Consumer<HttpServerExchange> impl;

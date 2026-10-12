@@ -42,8 +42,20 @@ public class HostRouting {
 
     private static String removePortSection(final String hostHeader) {
         if (hostHeader == null) return null;
-        final int offset = hostHeader.lastIndexOf(':');
-        return offset == -1 ? hostHeader : hostHeader.substring(0, offset);
+        final String host = hostHeader.trim();
+
+        // Bracketed IPv6 literal: "[::1]:8080" drops the port, "[::1]" is left alone. Splitting
+        // on ':' here would cut the address in half.
+        if (host.startsWith("[")) {
+            final int closing = host.lastIndexOf(']');
+            return closing == -1 ? host : host.substring(0, closing + 1);
+        }
+
+        // A single colon separates the port; two or more mean the value is IPv6 shorthand such
+        // as "::1", where the last colon is part of the address rather than a port.
+        final int offset = host.lastIndexOf(':');
+        if (offset == -1) return host;
+        return host.indexOf(':') == offset ? host.substring(0, offset) : host;
     }
 
 }

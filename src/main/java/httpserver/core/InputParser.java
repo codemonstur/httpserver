@@ -1,6 +1,5 @@
 package httpserver.core;
 
-import com.sun.source.tree.ReturnTree;
 import httpserver.error.InvalidInput;
 
 import java.util.Arrays;

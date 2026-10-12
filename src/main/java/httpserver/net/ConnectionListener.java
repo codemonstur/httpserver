@@ -3,6 +3,7 @@ package httpserver.net;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.net.Socket;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executor;
@@ -26,7 +27,8 @@ public abstract class ConnectionListener {
         this.handler = handler;
     }
 
-    protected boolean running = true;
+    // Written by the thread calling stop() and read by the accept loop.
+    protected volatile boolean running = true;
     protected ServerSocket serverSocket;
     protected final List<Connection> connections = new LinkedList<>();
 
@@ -35,9 +37,28 @@ public abstract class ConnectionListener {
         final var thread = new Thread(() -> {
             while (running) {
                 try {
+                    // Accept outside the lock: holding it while blocked in accept() would keep
+                    // stop() from ever reaching the connections it has to shut down.
+                    final Socket socket = serverSocket.accept();
+
+                    final Connection connection;
+                    try {
+                        connection = new Connection(executor, socket, handler);
+                    } catch (final IOException e) {
+                        try {
+                            socket.close();
+                        } catch (final IOException ignored) {}
+                        continue;
+                    }
                     synchronized (connections) {
-                        connections.add(new Connection(executor, serverSocket.accept(), handler));
-                        connections.removeIf(connection -> !connection.isAlive());
+                        if (!running) {
+                            // stop() ran while this connection was being handed over; make sure it
+                            // does not outlive the server as an untracked, open socket.
+                            connection.stop();
+                        } else {
+                            connections.add(connection);
+                            connections.removeIf(connection2 -> !connection2.isAlive());
+                        }
                     }
                 } catch (final Exception e) {}
             }
@@ -52,10 +73,11 @@ public abstract class ConnectionListener {
         this.running = false;
 
         try {
-            serverSocket.close();
+            if (serverSocket != null) serverSocket.close();
         } finally {
             synchronized (connections) {
                 connections.forEach(Connection::stop);
+                connections.clear();
             }
         }
     }

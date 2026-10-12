@@ -31,7 +31,7 @@ public enum FormParsing {;
 
     public static Map<String, String> parseUrlEncodedForm(final HttpServerExchange exchange, final Charset charset) throws IOException {
         final String type = exchange.getRequestHeader(CONTENT_TYPE);
-        if (!"application/x-www-form-urlencoded".equals(type))
+        if (!isUrlEncodedForm(type))
             throw new IOException("Content type no url encoded form. Found '" + type + "' instead.");
 
         final var map = new HashMap<String, String>();
@@ -49,10 +49,14 @@ public enum FormParsing {;
     }
 
     public static List<FormPart> parseMultipartForm(final String contentType, final int contentLength, final InputStream is) throws IOException {
-        if (!contentType.startsWith("multipart/form-data")) throw new IOException("Not multipart form data");
+        if (contentType == null || !contentType.toLowerCase(java.util.Locale.ENGLISH).startsWith("multipart/form-data"))
+            throw new IOException("Not multipart form data");
+        if (contentLength < 0) throw new IOException("Invalid content length");
         if (contentLength > 64 * 1024) throw new IOException("Form content too large");
 
-        final byte[] boundary = ("--" + contentType.substring(contentType.indexOf('=') + 1)).getBytes(US_ASCII);
+        final String boundaryValue = extractBoundary(contentType);
+        if (boundaryValue == null || boundaryValue.isEmpty()) throw new IOException("Missing multipart boundary");
+        final byte[] boundary = ("--" + boundaryValue).getBytes(US_ASCII);
         final byte[] rawData = new byte[contentLength];
         final List<FormPart> parts = new ArrayList<>();
 
@@ -74,11 +78,42 @@ public enum FormParsing {;
 
     private static int readUntil(final byte[] data, int offset, final InputStream in, final byte[] boundary) throws IOException {
         int b; while ((b = in.read()) != -1) {
+            // Checked before the write: the old check ran after offset++ and only once past the
+            // end, so a body larger than the buffer threw ArrayIndexOutOfBoundsException (a 500)
+            // instead of this IOException, and only after corrupting the array.
+            if (offset >= data.length) throw new IOException("Filled buffer but more data still available");
             data[offset++] = (byte) b;
             if (containsAt(data, boundary, offset)) return offset;
-            if (offset > data.length) throw new IOException("Filled buffer but more data still available");
         }
         return -1;
+    }
+
+    /**
+     * The media type may carry parameters (charset, boundary), and browsers are not consistent
+     * about casing, so only the type/subtype part decides this.
+     */
+    private static boolean isUrlEncodedForm(final String contentType) {
+        if (contentType == null) return false;
+        final int semicolon = contentType.indexOf(';');
+        final String mediaType = (semicolon == -1 ? contentType : contentType.substring(0, semicolon)).trim();
+        return mediaType.equalsIgnoreCase("application/x-www-form-urlencoded");
+    }
+
+    /**
+     * Reads the boundary parameter whatever its position and casing, unquoted if it is quoted.
+     */
+    private static String extractBoundary(final String contentType) {
+        for (final String parameter : contentType.split(";")) {
+            final int equals = parameter.indexOf(EQUALS);
+            if (equals == -1) continue;
+            if (!parameter.substring(0, equals).trim().equalsIgnoreCase("boundary")) continue;
+
+            String value = parameter.substring(equals + 1).trim();
+            if (value.length() >= 2 && value.startsWith("\"") && value.endsWith("\""))
+                value = value.substring(1, value.length() - 1);
+            return value;
+        }
+        return null;
     }
 
     public static int indexOf(final byte[] array, final byte[] target, final int start, final int end) {

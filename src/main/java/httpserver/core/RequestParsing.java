@@ -1,5 +1,7 @@
 package httpserver.core;
 
+import httpserver.util.LengthRestrictedInputStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -29,6 +31,10 @@ public enum RequestParsing {;
 
     public static void discardRemainingRequestBody(final HttpServerExchange exchange) throws IOException {
         final var in = exchange.getInputStream();
+        // A client waiting for a 100 Continue will never send the body we are about to drain,
+        // so answer the expectation first instead of blocking on a body that is not coming.
+        if (in instanceof final LengthRestrictedInputStream limited && limited.remaining() > 0)
+            exchange.requestBodyAccepted();
         while (in.read() != -1);
     }
 
