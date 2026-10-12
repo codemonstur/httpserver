@@ -8,7 +8,7 @@ import static httpserver.core.StatusCode.CREATED;
 import static httpserver.handlers.Compression.compress;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
-public enum CompressionTest {;
+public enum SimpleServer {;
 
     public static void main(final String... args) throws IOException {
         newHttpServer()

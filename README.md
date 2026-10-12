@@ -79,8 +79,14 @@ This should be sufficient to use in production.
 
 ## Testing
 
-There is no test harness yet.
-No benchmarks have been run.
+The library has a test suite under `src/test`, covering the parsing, routing, session and util
+classes, plus an integration test (`integration.RoundTripTest`) that boots a real server and drives
+it over real sockets. Run it with:
+
+    mvn test
+
+The suite includes a guard (`unittests.ByteCodeVersionTest`) that fails the build if the compiled
+classes ever target a class file version newer than Java 17, or get marked as preview features.
 
 ## Security
 
@@ -90,6 +96,5 @@ No benchmarks have been run.
 
 ## Graal support
 
-Graal doesn't support Java 19 yet.
-
-This library isn't very complicated, it should just work by the time Graal support for virtual threads comes along.
+The library targets Java 17, an LTS that GraalVM supports, so there is no dependency on preview
+features such as virtual threads to wait for.

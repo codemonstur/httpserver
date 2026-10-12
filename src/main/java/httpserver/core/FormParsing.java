@@ -19,9 +19,11 @@ public enum FormParsing {;
     public static Map<String, String> parseUrlEncodedForm(final HttpServerExchange exchange, final Charset charset,
                                                           final Set<String> validParameters) throws IOException, InvalidInput {
         final var form = parseUrlEncodedForm(exchange, charset);
-        final var formKeys = form.keySet();
-        if (!validParameters.containsAll(formKeys)) {
-            final var forbidden = formKeys.removeAll(validParameters);
+        final var forbidden = new TreeSet<String>();
+        for (final String parameter : form.keySet()) {
+            if (!validParameters.contains(parameter)) forbidden.add(parameter);
+        }
+        if (!forbidden.isEmpty()) {
             throw new InvalidInput("Form is not allowed to have these fields: " + forbidden);
         }
         return form;

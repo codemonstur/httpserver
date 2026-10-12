@@ -1,4 +1,4 @@
-package tools;
+package unittests;
 
 import httpserver.core.FormPart;
 import org.junit.Test;
@@ -6,11 +6,13 @@ import org.junit.Test;
 import java.io.*;
 import java.util.List;
 
+import static httpserver.core.FormParsing.indexOf;
 import static httpserver.core.FormParsing.parseMultipartForm;
+import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.junit.Assert.*;
 
-public class TestFormParse {
+public class FormParseTest {
 
     private static final String CONTENT_TYPE =
         "multipart/form-data; boundary=2a8ae6ad-f4ad-4d9a-a92c-6d217011fe0f";
@@ -43,6 +45,50 @@ public class TestFormParse {
             verifyFormPart(formParts, 2, "g");
             verifyFormPart(formParts, 3, "b");
         }
+    }
+
+    @Test
+    public void testRejectsNonMultipartContentTypes() {
+        try (final var is = new ByteArrayInputStream(FORM_DATA)) {
+            parseMultipartForm("application/json", FORM_DATA.length, is);
+            fail("Expected IOException for a non multipart content type");
+        } catch (final IOException e) {
+            assertEquals("Not multipart form data", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testRejectsOversizedForms() {
+        try (final var is = new ByteArrayInputStream(FORM_DATA)) {
+            parseMultipartForm(CONTENT_TYPE, 64 * 1024 + 1, is);
+            fail("Expected IOException for an oversized form");
+        } catch (final IOException e) {
+            assertEquals("Form content too large", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testIndexOfReturnsTheEndOffsetOfTheMatch() {
+        final byte[] array = "abcdef".getBytes(US_ASCII);
+        final byte[] abc = "abc".getBytes(US_ASCII);
+        final byte[] cde = "cde".getBytes(US_ASCII);
+        final byte[] xyz = "xyz".getBytes(US_ASCII);
+        final byte[] empty = new byte[0];
+
+        assertEquals(3, indexOf(array, abc, 0, array.length));
+        assertEquals(5, indexOf(array, cde, 0, array.length));
+        assertEquals(-1, indexOf(array, xyz, 0, array.length));
+        assertEquals(0, indexOf(array, empty, 0, array.length));
+    }
+
+    @Test
+    public void testIndexOfRespectsTheSearchRange() {
+        final byte[] array = "abcabc".getBytes(US_ASCII);
+        final byte[] abc = "abc".getBytes(US_ASCII);
+
+        assertEquals(3, indexOf(array, abc, 0, array.length));
+        assertEquals(-1, indexOf(array, abc, 4, array.length));
+        assertEquals(-1, indexOf(array, abc, 0, 2));
     }
 
     private static void verifyFormPart(final List<FormPart> parts, final int id, final String letter) {

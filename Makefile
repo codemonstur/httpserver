@@ -35,9 +35,9 @@ release-notes:
 
 deploy: build
 	@echo "[$(NAME)] Tagging and pushing to github"
+	@echo "[$(NAME)] Uploading to maven central"
+	@mvn clean deploy
+	@echo "[$(NAME)] Creating github release"
+	@hub release create -a target/$(NAME).jar -a target/$(NAME)-javadoc.jar -a target/$(NAME)-sources.jar -F src/docs/releases/release-$(VERSION).txt $(NAME)-$(VERSION)
 	@git tag $(NAME)-$(VERSION)
 	@git push && git push --tags
-	@echo "[$(NAME)] Creating github release"
-	@hub release create -a target/$(NAME)-$(VERSION).jar -a target/$(NAME)-$(VERSION)-javadoc.jar -a target/$(NAME)-$(VERSION)-sources.jar -F src/docs/releases/release-$(VERSION).txt $(NAME)-$(VERSION)
-	@echo "[$(NAME)] Uploading to maven central"
-	@mvn clean deploy -P release

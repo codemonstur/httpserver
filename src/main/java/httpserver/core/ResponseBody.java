@@ -22,7 +22,7 @@ public interface ResponseBody {
     public static ResponseBody newByteArrayBody(final byte[] data, final int offset, final int length) {
         return new ResponseBody() {
             public long getLength() {
-                return data.length;
+                return length;
             }
             public void writeTo(OutputStream out) throws IOException {
                 out.write(data, offset, length);

@@ -7,7 +7,8 @@ import static java.util.Map.entry;
 public enum StatusCode {;
 
     public static final int
-        CONTINUE = 101,
+        CONTINUE = 100,
+        SWITCHING_PROTOCOLS = 101,
         OK = 200,
         CREATED = 201,
         ACCEPTED = 202,
@@ -51,9 +52,10 @@ public enum StatusCode {;
 
     public static final String
         MESSAGE_CONTINUE = "Continue",
+        MESSAGE_SWITCHING_PROTOCOLS = "Switching Protocols",
         MESSAGE_OK = "Ok",
         MESSAGE_CREATED = "Created",
-        MESSAGE_ACCEPTED = "Acceptd",
+        MESSAGE_ACCEPTED = "Accepted",
         MESSAGE_NO_CONTENT = "No Content",
         MESSAGE_RESET_CONTENT = "Reset Content",
         MESSAGE_PARTIAL_CONTENT = "Partial Content",
@@ -94,6 +96,7 @@ public enum StatusCode {;
 
     private static final Map<Integer, String> codeToMessage = Map.ofEntries(
         entry(CONTINUE, MESSAGE_CONTINUE),
+        entry(SWITCHING_PROTOCOLS, MESSAGE_SWITCHING_PROTOCOLS),
         entry(OK, MESSAGE_OK),
         entry(CREATED, MESSAGE_CREATED),
         entry(ACCEPTED, MESSAGE_ACCEPTED),

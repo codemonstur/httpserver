@@ -41,6 +41,7 @@ public class HttpServerExchange {
 
     private String path;
     private Map<String, String> queryParameters;
+    private InputStream requestBody;
 
     private int statusCode = OK;
     private String statusMessage;
@@ -200,10 +201,16 @@ public class HttpServerExchange {
     }
 
     public InputStream getInputStream() {
+        if (requestBody != null) return requestBody;
+
         final String contentLength = getRequestHeader(CONTENT_LENGTH);
-        if (contentLength == null) return new ByteArrayInputStream(new byte[0]);
-        final long length = Long.parseLong(contentLength);
-        return new LengthRestrictedInputStream(in, length);
+        if (contentLength == null) {
+            requestBody = new ByteArrayInputStream(new byte[0]);
+        } else {
+            final long length = Long.parseLong(contentLength);
+            requestBody = new LengthRestrictedInputStream(in, length);
+        }
+        return requestBody;
     }
     public OutputStream getOutputStream() {
         return out;

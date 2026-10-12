@@ -41,7 +41,7 @@ public class LengthRestrictedInputStream extends InputStream {
 
         final int bytesToRead = (int) Math.min(Math.min(buffer.length, toRead), 8192);
         final int bytesRead = in.read(buffer, 0, bytesToRead);
-        toRead -= bytesToRead;
+        if (bytesRead > 0) toRead -= bytesRead;
         return bytesRead;
     }
 
@@ -51,7 +51,7 @@ public class LengthRestrictedInputStream extends InputStream {
 
         final int bytesToRead = Math.min( (int) Math.min(Math.min(buffer.length, toRead), 8192), length);
         final int bytesRead = in.read(buffer, offset, bytesToRead);
-        toRead -= bytesToRead;
+        if (bytesRead > 0) toRead -= bytesRead;
         return bytesRead;
     }
 

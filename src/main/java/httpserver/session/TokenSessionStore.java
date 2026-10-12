@@ -51,7 +51,7 @@ public interface TokenSessionStore<T> extends SessionStore<T> {
     }
     default T fromSessionValue(final String sessionValue) throws Forbidden {
         final String[] encodedSession = sessionValue.split("\\.");
-        if (isValidSession(encodedSession, getSessionValidationKey()))
+        if (!isValidSession(encodedSession, getSessionValidationKey()))
             throw new Forbidden("Invalid session");
         return sessionFromJson(new String(decodeBase64Url(encodedSession[0]), UTF_8));
     }

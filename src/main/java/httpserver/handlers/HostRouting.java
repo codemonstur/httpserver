@@ -10,7 +10,6 @@ import java.util.Map;
 import static httpserver.core.Headers.HOST;
 import static httpserver.core.StatusCode.NOT_FOUND;
 import static java.util.Locale.ENGLISH;
-import static java.util.Locale.of;
 
 public class HostRouting {
 
