@@ -80,6 +80,8 @@ public enum Compression {;
     /**
      * A body that must not be sent (1xx, 204, 304), or one that is empty, is left alone:
      * wrapping it would either violate the status code or just add a gzip header around nothing.
+     * So is a body of unknown length (sendChunked): it exists to be streamed, and buffering it
+     * into memory here to recompress would defeat that. Such a body goes out uncompressed.
      */
     private static boolean canCompress(final HttpServerExchange exchange) {
         if (exchange.isResponseSent()) return false;

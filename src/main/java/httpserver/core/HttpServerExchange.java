@@ -1,7 +1,10 @@
 package httpserver.core;
 
 import httpserver.util.Chars;
+import httpserver.util.ChunkedOutputStream;
 import httpserver.util.LengthRestrictedInputStream;
+import httpserver.websocket.WebSocket;
+import httpserver.websocket.WebSocketHandler;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -10,22 +13,28 @@ import java.nio.charset.Charset;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static httpserver.core.ContentType.text_plain;
 import static httpserver.core.Headers.*;
 import static httpserver.core.ResponseBody.*;
+import static httpserver.core.StatusCode.BAD_REQUEST;
 import static httpserver.core.StatusCode.NOT_MODIFIED;
 import static httpserver.core.StatusCode.NO_CONTENT;
 import static httpserver.core.StatusCode.OK;
+import static httpserver.core.StatusCode.SWITCHING_PROTOCOLS;
+import static httpserver.core.StatusCode.UPGRADE_REQUIRED;
 import static httpserver.core.StatusCode.getMessageForCode;
 import static httpserver.util.Chars.EQUALS;
 import static httpserver.util.Chars.QUESTION_MARK;
 import static httpserver.util.Encoding.decodeUrl;
 import static httpserver.util.Strings.*;
 import static java.nio.charset.StandardCharsets.US_ASCII;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.time.Instant.now;
 import static java.util.Locale.ENGLISH;
 
@@ -222,6 +231,17 @@ public class HttpServerExchange {
     public void send(final InputStream in, final long length) {
         this.responseBody = newInputStreamBody(in, length);
     }
+    /**
+     * Streams a response body of unknown length with chunked transfer encoding. Overrides any
+     * earlier setNoContentLength(): the body is framed, not left to the connection. Clients
+     * that predate HTTP/1.1 cannot read chunked, so for them the connection is marked to close
+     * and the body is delimited by that close instead.
+     */
+    public void sendChunked(final InputStream in) {
+        this.responseBody = newInputStreamBody(in);
+        this.noContentLength = false;
+        if (!HTTP_11.equals(protocol)) setResponseHeader(CONNECTION, CLOSE);
+    }
 
     private static final byte[] RESPONSE_CONTINUE = "HTTP/1.1 100 Continue\r\n\r\n".getBytes(US_ASCII);
     /**
@@ -289,12 +309,85 @@ public class HttpServerExchange {
         return connectionClosed;
     }
 
+    /**
+     * True when the client asked to switch this connection to the websocket protocol. The
+     * version and the key are checked by acceptWebSocket, which rejects an attempt that gets
+     * them wrong; callers use this to choose between a websocket and their fallback.
+     */
+    public boolean isWebSocketUpgrade() {
+        return containsToken(UPGRADE, "websocket") && containsToken(CONNECTION, "Upgrade");
+    }
+    private boolean containsToken(final String name, final String token) {
+        for (final String value : getRequestHeaders(name))
+            for (final String part : value.split(","))
+                if (token.equalsIgnoreCase(part.trim())) return true;
+        return false;
+    }
+
+    /**
+     * Completes the opening handshake and runs the websocket session to its end, blocking the
+     * worker exactly as server sent events do: the connection belongs to the session until it
+     * closes. Returns the (by then closed) session, or null when the handshake was rejected,
+     * in which case the response says why: 426 for an unsupported version, 400 for a
+     * malformed attempt.
+     */
+    public WebSocket acceptWebSocket(final WebSocketHandler handler) throws IOException {
+        if (!isWebSocketUpgrade()) {
+            setStatusCode(BAD_REQUEST);
+            setResponseHeader(CONTENT_TYPE, text_plain.toString());
+            send("Expected an Upgrade: websocket request", UTF_8);
+            return null;
+        }
+        final String version = getRequestHeader(SEC_WEBSOCKET_VERSION);
+        if (version == null || !"13".equals(version.trim())) {
+            setStatusCode(UPGRADE_REQUIRED);
+            setResponseHeader(CONTENT_TYPE, text_plain.toString());
+            setResponseHeader(SEC_WEBSOCKET_VERSION, "13");
+            send("Only websocket version 13 is supported", UTF_8);
+            return null;
+        }
+        final String key = getRequestHeader(SEC_WEBSOCKET_KEY);
+        if (key == null || decodeNonce(key) == null) {
+            setStatusCode(BAD_REQUEST);
+            setResponseHeader(CONTENT_TYPE, text_plain.toString());
+            send("Sec-WebSocket-Key is missing or malformed", UTF_8);
+            return null;
+        }
+
+        setStatusCode(SWITCHING_PROTOCOLS);
+        setResponseHeader(UPGRADE, "websocket");
+        setResponseHeader(CONNECTION, "Upgrade");
+        setResponseHeader(SEC_WEBSOCKET_ACCEPT, WebSocket.acceptKey(key));
+        sendResponse();
+
+        final var webSocket = new WebSocket(in, out, handler);
+        try {
+            webSocket.run();
+        } finally {
+            // The keep-alive loop must never read this connection as HTTP again.
+            connectionClosed = true;
+        }
+        return webSocket;
+    }
+
+    /** The client's nonce: a valid key is base64 of exactly 16 bytes, anything else is not one. */
+    private static byte[] decodeNonce(final String key) {
+        try {
+            final byte[] nonce = Base64.getDecoder().decode(key);
+            return nonce.length == 16 ? nonce : null;
+        } catch (final IllegalArgumentException e) {
+            return null;
+        }
+    }
+
     public static final DateTimeFormatter
         DATE_FORMAT = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z", ENGLISH)
             .withZone(ZoneId.of("GMT"));
 
     public void sendResponse() throws IOException {
         if (responseSent) return;
+
+        final boolean chunked = shouldSendChunked();
 
         if (shouldSendHeadResponse()) {
             final PrintWriter writer = new PrintWriter(out);
@@ -303,6 +396,8 @@ public class HttpServerExchange {
             for (final var header : responseHeaders.entrySet())
                 for (final String value : header.getValue())
                     writer.print(header.getKey() + HEADER_SEPARATOR + value + CRLF);
+            if (chunked)
+                writer.print(TRANSFER_ENCODING + HEADER_SEPARATOR + CHUNKED + CRLF);
             if (shouldSendContentLength())
                 writer.print(CONTENT_LENGTH + HEADER_SEPARATOR + responseBody.getLength() + CRLF);
             if (getResponseHeader(DATE) == null)
@@ -311,7 +406,16 @@ public class HttpServerExchange {
             writer.flush();
         }
         if (methodAllowsResponseBody()) {
-            responseBody.writeTo(out);
+            if (chunked) {
+                // Closed only once the body has been written in full: if the write fails part
+                // way through, the missing terminator is what lets the client notice that the
+                // body was truncated, and the exception that follows closes the connection.
+                final var chunkedOut = new ChunkedOutputStream(out);
+                responseBody.writeTo(chunkedOut);
+                chunkedOut.close();
+            } else {
+                responseBody.writeTo(out);
+            }
         }
         responseSent = true;
     }
@@ -336,14 +440,31 @@ public class HttpServerExchange {
 
     /**
      * RFC 9112 forbids Content-Length on 1xx and 204, and forbids it on a 304 unless it is the
-     * length of the selected representation, which we never know here.
+     * length of the selected representation, which we never know here. A body of unknown length
+     * has no value to send either way; it is framed as chunked instead.
      */
     private boolean shouldSendContentLength() {
         if (noContentLength) return false;
         if (getResponseHeader(CONTENT_LENGTH) != null) return false;
+        if (responseBody.getLength() == UNKNOWN_LENGTH) return false;
         if (statusCode < 200) return false;
         if (statusCode == NO_CONTENT || statusCode == NOT_MODIFIED) return false;
         return true;
+    }
+
+    /**
+     * A body whose length is not known before it has been written is framed as chunked transfer
+     * encoding, but only for HTTP/1.1: sendChunked() marks older connections to close, so their
+     * body is delimited by that close instead. Framing a handler chose explicitly, and the status
+     * codes that may carry neither a body nor a framing header, are left alone.
+     */
+    private boolean shouldSendChunked() {
+        if (noContentLength) return false;
+        if (responseBody.getLength() != UNKNOWN_LENGTH) return false;
+        if (getResponseHeader(TRANSFER_ENCODING) != null) return false;
+        if (statusCode < 200) return false;
+        if (statusCode == NO_CONTENT || statusCode == NOT_MODIFIED) return false;
+        return HTTP_11.equals(protocol);
     }
 
     private boolean shouldSendHeadResponse() throws IOException {

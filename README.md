@@ -1,6 +1,6 @@
 
 [![GitHub Release](https://img.shields.io/github/release/codemonstur/httpserver.svg)](https://github.com/codemonstur/httpserver/releases)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.codemonstur/httpserver/badge.svg)](http://mvnrepository.com/artifact/com.github.codemonstur/httpserver)
+[![Maven Central](https://img.shields.io/maven-central/v/com.github.codemonstur/httpserver.svg)](https://central.sonatype.com/artifact/com.github.codemonstur/httpserver)
 [![MIT Licence](https://badges.frapsoft.com/os/mit/mit.svg?v=103)](https://opensource.org/licenses/mit-license.php)
 
 # HTTP server

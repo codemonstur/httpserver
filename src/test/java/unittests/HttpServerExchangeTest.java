@@ -14,9 +14,11 @@ import static httpserver.core.Headers.CONTENT_LENGTH;
 import static httpserver.core.Headers.DATE;
 import static httpserver.core.Headers.EXPECT;
 import static httpserver.core.Headers.HOST;
+import static httpserver.core.Headers.TRANSFER_ENCODING;
 import static httpserver.core.Headers.USER_AGENT;
 import static httpserver.core.RequestParsing.discardRemainingRequestBody;
 import static httpserver.core.StatusCode.CREATED;
+import static httpserver.core.StatusCode.NO_CONTENT;
 import static httpserver.core.StatusCode.OK;
 import static httpserver.util.Strings.KEEP_ALIVE;
 import static java.nio.charset.StandardCharsets.UTF_8;
@@ -322,6 +324,115 @@ public class HttpServerExchangeTest {
         final String response = out.toString(UTF_8);
         assertFalse(response.contains(CONTENT_LENGTH));
         assertTrue(response.endsWith("hello"));
+    }
+
+    @Test
+    public void testSendChunkedFramesTheBody() throws IOException {
+        final var out = new ByteArrayOutputStream();
+        final var exchange = newExchange(GET_REQUEST, new ByteArrayInputStream(new byte[0]), out);
+        exchange.sendChunked(new ByteArrayInputStream("hello".getBytes(UTF_8)));
+
+        exchange.sendResponse();
+
+        final String response = out.toString(UTF_8);
+        assertTrue(response.contains(TRANSFER_ENCODING + ": chunked"));
+        assertFalse(response.contains(CONTENT_LENGTH));
+        assertTrue(response.endsWith("\r\n0\r\n\r\n"));
+        assertEquals("hello", decodeChunks(response));
+    }
+
+    @Test
+    public void testSendChunkedClosesOlderConnections() throws IOException {
+        final var out = new ByteArrayOutputStream();
+        final var exchange = newExchange("GET /path HTTP/1.0\r\n\r\n",
+            new ByteArrayInputStream(new byte[0]), out);
+        exchange.sendChunked(new ByteArrayInputStream("hello".getBytes(UTF_8)));
+
+        exchange.sendResponse();
+
+        // No chunked framing exists in HTTP/1.0: no framing header at all, and the close of
+        // the connection is what tells the client that the body is complete.
+        final String response = out.toString(UTF_8);
+        assertTrue(response.contains(CONNECTION + ": close"));
+        assertFalse(response.contains(TRANSFER_ENCODING));
+        assertFalse(response.contains(CONTENT_LENGTH));
+        assertTrue(response.endsWith("hello"));
+    }
+
+    @Test
+    public void testSendChunkedOverridesAnEarlierSetNoContentLength() throws IOException {
+        final var out = new ByteArrayOutputStream();
+        final var exchange = newExchange(GET_REQUEST, new ByteArrayInputStream(new byte[0]), out);
+        exchange.setNoContentLength();
+        exchange.sendChunked(new ByteArrayInputStream("hello".getBytes(UTF_8)));
+
+        exchange.sendResponse();
+
+        final String response = out.toString(UTF_8);
+        assertTrue(response.contains(TRANSFER_ENCODING + ": chunked"));
+        assertEquals("hello", decodeChunks(response));
+    }
+
+    @Test
+    public void testSetNoContentLengthAfterSendChunkedStaysCloseDelimited() throws IOException {
+        final var out = new ByteArrayOutputStream();
+        final var exchange = newExchange(GET_REQUEST, new ByteArrayInputStream(new byte[0]), out);
+        exchange.sendChunked(new ByteArrayInputStream("hello".getBytes(UTF_8)));
+        exchange.setNoContentLength();
+
+        exchange.sendResponse();
+
+        final String response = out.toString(UTF_8);
+        assertFalse(response.contains(TRANSFER_ENCODING));
+        assertFalse(response.contains(CONTENT_LENGTH));
+        assertTrue(response.endsWith("hello"));
+    }
+
+    @Test
+    public void testChunkedNotUsedForNoContent() throws IOException {
+        final var out = new ByteArrayOutputStream();
+        final var exchange = newExchange(GET_REQUEST, new ByteArrayInputStream(new byte[0]), out);
+        exchange.sendChunked(new ByteArrayInputStream("hello".getBytes(UTF_8)));
+        exchange.setStatusCode(NO_CONTENT);
+
+        exchange.sendResponse();
+
+        final String response = out.toString(UTF_8);
+        assertFalse(response.contains(TRANSFER_ENCODING));
+        assertFalse(response.contains(CONTENT_LENGTH));
+        assertFalse(response.contains("hello"));
+    }
+
+    @Test
+    public void testHeadDescribesAChunkedGetWithoutSendingIt() throws IOException {
+        final var out = new ByteArrayOutputStream();
+        final var exchange = newExchange("HEAD /path HTTP/1.1\r\nHost: example.com\r\n\r\n",
+            new ByteArrayInputStream(new byte[0]), out);
+        exchange.sendChunked(new ByteArrayInputStream("hello".getBytes(UTF_8)));
+
+        exchange.sendResponse();
+
+        // The headers describe the representation a GET would return; the body itself stays
+        // unsent, exactly as it does for a Content-Length response to a HEAD.
+        final String response = out.toString(UTF_8);
+        assertTrue(response.contains(TRANSFER_ENCODING + ": chunked"));
+        assertFalse(response.contains("hello"));
+    }
+
+    /**
+     * Reads chunked framing back the way a client would: hex sized chunks until the zero
+     * terminator, returning the decoded payload.
+     */
+    private static String decodeChunks(final String response) {
+        String body = response.substring(response.indexOf("\r\n\r\n") + 4);
+        final var decoded = new StringBuilder();
+        while (true) {
+            final int lineEnd = body.indexOf("\r\n");
+            final int size = Integer.parseInt(body.substring(0, lineEnd), 16);
+            if (size == 0) return decoded.toString();
+            decoded.append(body, lineEnd + 2, lineEnd + 2 + size);
+            body = body.substring(lineEnd + 2 + size + 2);
+        }
     }
 
     @Test

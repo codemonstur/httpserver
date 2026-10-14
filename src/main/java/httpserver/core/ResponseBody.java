@@ -31,6 +31,29 @@ public interface ResponseBody {
         };
     }
 
+    /**
+     * The length of a body that is not known before it has been written. Framed as chunked
+     * transfer encoding for HTTP/1.1, and delimited by connection close for older clients.
+     */
+    long UNKNOWN_LENGTH = -1;
+
+    /**
+     * A body streamed without knowing its size up front, which is the case where chunked
+     * transfer encoding earns its keep: no stat before the read, and no race if the file
+     * changes between the two.
+     */
+    public static ResponseBody newInputStreamBody(final InputStream in) {
+        return new ResponseBody() {
+            public long getLength() {
+                return UNKNOWN_LENGTH;
+            }
+            public void writeTo(final OutputStream out) throws IOException {
+                in.transferTo(out);
+                out.flush();
+            }
+        };
+    }
+
     public static ResponseBody newInputStreamBody(final InputStream in, final long length) {
         return new ResponseBody() {
             public long getLength() {

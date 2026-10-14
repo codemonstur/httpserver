@@ -14,6 +14,7 @@ public enum Strings {;
         HTTP_11 = "HTTP/1.1",
         HEAD = "HEAD",
         KEEP_ALIVE = "keep-alive",
-        CLOSE = "close";
+        CLOSE = "close",
+        CHUNKED = "chunked";
 
 }

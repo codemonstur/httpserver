@@ -30,7 +30,11 @@ public enum Headers {;
         ACCEPT_ENCODING = "Accept-Encoding",
         CONTENT_ENCODING = "Content-Encoding",
         PRAGMA = "Pragma",
+        SEC_WEBSOCKET_ACCEPT = "Sec-WebSocket-Accept",
+        SEC_WEBSOCKET_KEY = "Sec-WebSocket-Key",
+        SEC_WEBSOCKET_VERSION = "Sec-WebSocket-Version",
         TRANSFER_ENCODING = "Transfer-Encoding",
+        UPGRADE = "Upgrade",
         VARY = "Vary";
 
     public static boolean isContentHeader(final String header) {
