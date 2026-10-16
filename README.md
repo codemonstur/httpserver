@@ -73,6 +73,22 @@ An example of a handler:
         };
     }
 
+## Brotli compression
+
+The optional `httpserver.handlers.Brotli` handler adds `br` compression alongside the gzip and
+deflate support of `httpserver.handlers.Compression`. It is backed by
+[brotli4j](https://github.com/aayushatharva/brotli4j), which is an optional dependency of this
+library, so add it explicitly to use the handler:
+
+    <dependency>
+        <groupId>com.aayushatharva.brotli4j</groupId>
+        <artifactId>brotli4j</artifactId>
+        <version>1.12.0</version>
+    </dependency>
+
+The matching native library for your platform is pulled in automatically. Wrap your handler with
+`Brotli.compress(...)` for gzip/deflate/br, or `Brotli.compressBrotli(...)` for br only.
+
 ## Threading
 
 Each connection is handled by a worker thread taken from a cached thread pool, so the number of

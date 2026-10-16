@@ -43,6 +43,7 @@
 
         <version.library.junit>4.13.2</version.library.junit>
         <version.library.undertow>2.4.4.Final</version.library.undertow>
+        <version.library.brotli4j>1.12.0</version.library.brotli4j>
 
         <version.plugin.gpg>3.0.1</version.plugin.gpg>
         <version.plugin.compiler>3.11.0</version.plugin.compiler>
@@ -174,6 +175,15 @@
             <artifactId>undertow-core</artifactId>
             <version>${version.library.undertow}</version>
             <scope>test</scope>
+        </dependency>
+
+        <!--  Optional so it is not forced on consumers: only needed when the
+              Brotli handler is used, together with a brotli4j native jar  -->
+        <dependency>
+            <groupId>com.aayushatharva.brotli4j</groupId>
+            <artifactId>brotli4j</artifactId>
+            <version>${version.library.brotli4j}</version>
+            <optional>true</optional>
         </dependency>
 
     </dependencies>
