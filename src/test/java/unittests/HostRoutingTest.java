@@ -2,12 +2,12 @@ package unittests;
 
 import httpserver.HttpHandler;
 import httpserver.handlers.HostRouting;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static httpserver.core.StatusCode.CONFLICT;
 import static httpserver.core.StatusCode.NOT_FOUND;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static unittests.Exchanges.newExchange;
 
 public class HostRoutingTest {

@@ -1,16 +1,13 @@
 package unittests;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static httpserver.util.Functions.isNullOrEmpty;
 import static httpserver.util.Functions.orDefault;
 import static httpserver.util.Functions.rangeBound;
 import static httpserver.util.Functions.requireNotNull;
 import static httpserver.util.Functions.requireTrue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FunctionsTest {
 

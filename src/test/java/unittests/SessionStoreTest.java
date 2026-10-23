@@ -1,13 +1,13 @@
 package unittests;
 
 import httpserver.core.HttpServerExchange;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
 import static httpserver.session.SessionStore.getValueForCookie;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static unittests.Exchanges.newExchange;
 
 public class SessionStoreTest {

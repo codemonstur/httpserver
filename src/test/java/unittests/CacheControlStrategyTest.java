@@ -1,7 +1,7 @@
 package unittests;
 
 import httpserver.core.HttpServerExchange;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
@@ -12,8 +12,8 @@ import static httpserver.core.CacheControlStrategy.STORE_BUT_CHECK_SERVER;
 import static httpserver.core.Headers.CACHE_CONTROL;
 import static httpserver.core.Headers.EXPIRES;
 import static httpserver.core.Headers.PRAGMA;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static unittests.Exchanges.newExchange;
 
 public class CacheControlStrategyTest {

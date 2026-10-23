@@ -1,7 +1,7 @@
 package unittests;
 
 import httpserver.core.ResponseBody;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -11,7 +11,7 @@ import static httpserver.core.ResponseBody.EMPTY_BODY;
 import static httpserver.core.ResponseBody.newByteArrayBody;
 import static httpserver.core.ResponseBody.newInputStreamBody;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ResponseBodyTest {
 

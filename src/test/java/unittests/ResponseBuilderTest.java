@@ -1,7 +1,7 @@
 package unittests;
 
 import httpserver.core.HttpServerExchange;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -16,8 +16,8 @@ import static httpserver.core.StatusCode.CREATED;
 import static httpserver.core.StatusCode.FOUND;
 import static httpserver.core.StatusCode.INTERNAL_SERVER_ERROR;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 import static unittests.Exchanges.newExchange;
 
 public class ResponseBuilderTest {

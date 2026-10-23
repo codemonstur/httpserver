@@ -1,7 +1,7 @@
 package unittests;
 
 import httpserver.error.InvalidInput;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -21,10 +21,7 @@ import static httpserver.core.InputParser.getOptionalEnum;
 import static httpserver.core.InputParser.getOptionalInteger;
 import static httpserver.core.InputParser.getOptionalLong;
 import static httpserver.core.InputParser.getOptionalString;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class InputParserTest {
 

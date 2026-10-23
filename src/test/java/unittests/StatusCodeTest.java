@@ -1,6 +1,6 @@
 package unittests;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static httpserver.core.StatusCode.ACCEPTED;
 import static httpserver.core.StatusCode.CONTINUE;
@@ -11,7 +11,7 @@ import static httpserver.core.StatusCode.NO_CONTENT;
 import static httpserver.core.StatusCode.OK;
 import static httpserver.core.StatusCode.SWITCHING_PROTOCOLS;
 import static httpserver.core.StatusCode.getMessageForCode;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StatusCodeTest {
 

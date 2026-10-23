@@ -2,7 +2,7 @@ package unittests;
 
 import httpserver.websocket.Frames;
 import httpserver.websocket.WebSocketException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -12,11 +12,7 @@ import static httpserver.websocket.Frames.OP_BINARY;
 import static httpserver.websocket.Frames.OP_CLOSE;
 import static httpserver.websocket.Frames.OP_TEXT;
 import static java.nio.charset.StandardCharsets.US_ASCII;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static unittests.ClientFrames.frame;
 import static unittests.ClientFrames.text;
 import static unittests.ClientFrames.unmasked;

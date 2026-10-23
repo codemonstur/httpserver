@@ -1,12 +1,12 @@
 package unittests;
 
 import httpserver.handlers.MethodPathRouting;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static httpserver.core.StatusCode.CONFLICT;
 import static httpserver.core.StatusCode.NOT_FOUND;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static unittests.Exchanges.newExchange;
 import static unittests.Exchanges.request;
 

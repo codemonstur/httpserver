@@ -1,7 +1,7 @@
 package unittests;
 
 import httpserver.core.FormPart;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.*;
 import java.util.List;
@@ -10,7 +10,8 @@ import static httpserver.core.FormParsing.indexOf;
 import static httpserver.core.FormParsing.parseMultipartForm;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class FormParseTest {
 
@@ -39,7 +40,7 @@ public class FormParseTest {
     public void testFormParsing() throws IOException {
         try (final var is = new ByteArrayInputStream(FORM_DATA)) {
             final List<FormPart> formParts = parseMultipartForm(CONTENT_TYPE, FORM_DATA.length, is);
-            assertEquals("Invalid form parts length", 3, formParts.size());
+            assertEquals(3, formParts.size(), "Invalid form parts length");
 
             verifyFormPart(formParts, 1, "r");
             verifyFormPart(formParts, 2, "g");
@@ -97,10 +98,10 @@ public class FormParseTest {
     }
     private static void verifyFormPart(final FormPart part, final String disposition
             , final String type, final int headerSize, final int dataSize) {
-        assertEquals("Invalid Disposition", disposition, part.getDisposition());
-        assertEquals("Invalid content type", type, part.getContentType());
-        assertEquals("Invalid number of headers", headerSize, part.getHeaders().size());
-        assertEquals("Invalid number of headers", dataSize, part.getData().length);
+        assertEquals(disposition, part.getDisposition(), "Invalid Disposition");
+        assertEquals(type, part.getContentType(), "Invalid content type");
+        assertEquals(headerSize, part.getHeaders().size(), "Invalid number of headers");
+        assertEquals(dataSize, part.getData().length, "Invalid number of headers");
     }
 
 }

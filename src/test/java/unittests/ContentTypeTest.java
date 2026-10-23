@@ -1,12 +1,12 @@
 package unittests;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static httpserver.core.ContentType.application_json;
 import static httpserver.core.ContentType.newContentType;
 import static httpserver.core.ContentType.text_plain;
 import static httpserver.core.ContentType.toContentType;
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ContentTypeTest {
 

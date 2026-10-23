@@ -3,7 +3,7 @@ package unittests;
 import httpserver.core.HttpServerExchange;
 import httpserver.error.Forbidden;
 import httpserver.session.TokenSessionStore;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -11,10 +11,7 @@ import java.nio.charset.Charset;
 import static httpserver.core.Headers.SET_COOKIE;
 import static httpserver.util.Encoding.encodeBase64Url;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static unittests.Exchanges.newExchange;
 
 public class TokenSessionStoreTest {
@@ -43,7 +40,7 @@ public class TokenSessionStoreTest {
 
     private static String sessionValueFrom(final HttpServerExchange exchange) {
         final String setCookie = exchange.getResponseHeader(SET_COOKIE);
-        assertTrue("Expected a session cookie, found: " + setCookie, setCookie.startsWith("session="));
+        assertTrue(setCookie.startsWith("session="), "Expected a session cookie, found: " + setCookie);
         return setCookie.substring("session=".length(), setCookie.indexOf(';'));
     }
 

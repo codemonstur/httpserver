@@ -1,6 +1,6 @@
 package unittests;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Base64;
 
@@ -14,10 +14,7 @@ import static httpserver.util.Encoding.hmacSha256;
 import static httpserver.util.Encoding.newSha256;
 import static httpserver.util.Encoding.sha256;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class EncodingTest {
 

@@ -1,7 +1,7 @@
 package unittests;
 
 import httpserver.util.LengthRestrictedInputStream;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -9,9 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import static java.nio.charset.StandardCharsets.US_ASCII;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class LengthRestrictedInputStreamTest {
 

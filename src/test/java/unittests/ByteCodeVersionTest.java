@@ -1,12 +1,12 @@
 package unittests;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * The library promises to run on Java 17, so every compiled class has to target class file
@@ -38,15 +38,15 @@ public class ByteCodeVersionTest {
             final int minor = readShort(header, 4);
             final int major = readShort(header, 6);
 
-            assertEquals(clazz + " has a corrupted class file", CLASS_FILE_MAGIC, magic);
-            assertEquals(clazz + " must not be flagged as a preview feature", MINOR_VERSION_NOT_PREVIEW, minor);
-            assertEquals(clazz + " targets a class file version newer than Java 17", MAJOR_VERSION_JAVA_17, major);
+            assertEquals(CLASS_FILE_MAGIC, magic, clazz + " has a corrupted class file");
+            assertEquals(MINOR_VERSION_NOT_PREVIEW, minor, clazz + " must not be flagged as a preview feature");
+            assertEquals(MAJOR_VERSION_JAVA_17, major, clazz + " targets a class file version newer than Java 17");
         }
     }
 
     private static byte[] readClassFileHeader(final String clazz) throws IOException {
         try (final InputStream in = ByteCodeVersionTest.class.getClassLoader().getResourceAsStream(clazz)) {
-            assertNotNull("Could not find " + clazz + " on the classpath", in);
+            assertNotNull(in, "Could not find " + clazz + " on the classpath");
             return in.readNBytes(8);
         }
     }

@@ -1,7 +1,6 @@
 package unittests;
 
-import httpserver.core.HttpServerExchange;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -19,15 +18,9 @@ import static httpserver.core.Headers.USER_AGENT;
 import static httpserver.core.RequestParsing.discardRemainingRequestBody;
 import static httpserver.core.StatusCode.CREATED;
 import static httpserver.core.StatusCode.NO_CONTENT;
-import static httpserver.core.StatusCode.OK;
 import static httpserver.util.Strings.KEEP_ALIVE;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static unittests.Exchanges.newExchange;
 
 public class HttpServerExchangeTest {

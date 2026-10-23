@@ -1,7 +1,7 @@
 package unittests;
 
 import httpserver.handlers.Compression;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -11,8 +11,8 @@ import static httpserver.core.Headers.CONTENT_ENCODING;
 import static httpserver.core.Headers.CONTENT_LENGTH;
 import static httpserver.core.Headers.TRANSFER_ENCODING;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static unittests.Exchanges.newExchange;
 import static unittests.Exchanges.request;
 

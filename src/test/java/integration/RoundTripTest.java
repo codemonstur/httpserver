@@ -4,9 +4,9 @@ import httpserver.HttpHandler;
 import httpserver.HttpServer;
 import httpserver.core.FormPart;
 import httpserver.session.TokenSessionStore;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -49,8 +49,8 @@ import static java.net.http.HttpResponse.BodyHandlers.ofByteArray;
 import static java.net.http.HttpResponse.BodyHandlers.ofString;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Boots the real server on an ephemeral port and drives it with a real HTTP client, so the whole
@@ -68,7 +68,7 @@ public class RoundTripTest {
     private static HttpClient noRedirectClient;
     private static String baseUrl;
 
-    @BeforeClass
+    @BeforeAll
     public static void startServer() throws Exception {
         // The server is thread-per-connection and holds a worker for each keep-alive connection,
         // so the pool has to be larger than the number of concurrently open connections.
@@ -92,7 +92,7 @@ public class RoundTripTest {
                 .connectTimeout(Duration.ofSeconds(5)).build();
     }
 
-    @AfterClass
+    @AfterAll
     public static void stopServer() throws IOException {
         server.stop();
         executor.shutdownNow();
@@ -150,7 +150,7 @@ public class RoundTripTest {
         assertEquals("text/plain; charset=UTF-8", response.headers().firstValue("content-type").orElseThrow());
         assertEquals("round-trip", response.headers().firstValue("x-custom").orElseThrow());
         assertEquals(Integer.toString(GREETING.length()), response.headers().firstValue("content-length").orElseThrow());
-        assertTrue("Expected a Date header", response.headers().firstValue("date").isPresent());
+        assertTrue(response.headers().firstValue("date").isPresent(), "Expected a Date header");
     }
 
     @Test
@@ -366,7 +366,7 @@ public class RoundTripTest {
     private static String sessionCookieOf(final HttpResponse<String> response) {
         final var setCookie = response.headers().firstValue("set-cookie")
                 .orElseThrow(() -> new AssertionError("Expected a Set-Cookie header, got: " + response.headers()));
-        assertTrue("Expected a session cookie, found: " + setCookie, setCookie.startsWith("session="));
+        assertTrue(setCookie.startsWith("session="), "Expected a session cookie, found: " + setCookie);
         return setCookie.substring(0, setCookie.indexOf(';'));
     }
 

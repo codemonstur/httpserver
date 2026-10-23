@@ -41,11 +41,12 @@ bench: ## Benchmark the server against Undertow
 	@MAVEN_OPTS="-Xms512m -Xmx512m" mvn -q org.codehaus.mojo:exec-maven-plugin:3.5.0:java \
 		-Dexec.classpathScope=test -Dexec.mainClass=benchmarks.Bench
 
-validate: ## Check dependency versions, cves, and licenses
+validate: ## Check dependency versions, cves, licenses, and code quality
 	@mvn versions:display-dependency-updates
 	@mvn versions:display-plugin-updates
 	@mvn validate -P vulnerabilities
 	@mvn validate -P licenses
+	@mvn validate -P codequality
 
 release-notes:
 	@mkdir -p src/docs/releases
