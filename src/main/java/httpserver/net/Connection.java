@@ -12,6 +12,9 @@ public final class Connection {
     public Connection(final Executor executor, final Socket socket, final ConnectionHandler handler)
             throws IOException {
         this.socket = socket;
+        // Disable Nagle: the default delays small writes by up to ~40 ms, which dominates
+        // the latency of small responses on keep-alive connections.
+        socket.setTcpNoDelay(true);
         final var out = socket.getOutputStream();
         final var in = socket.getInputStream();
         try {

@@ -35,7 +35,6 @@ import static httpserver.util.Encoding.decodeUrl;
 import static httpserver.util.Strings.*;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
-import static java.time.Instant.now;
 import static java.util.Locale.ENGLISH;
 
 public class HttpServerExchange {
@@ -46,6 +45,7 @@ public class HttpServerExchange {
     private final String uri;
     private final String protocol;
     private final List<String> headers;
+    private final Map<String, List<String>> requestHeadersByName;
 
     private final Socket socket;
     private final InputStream in;
@@ -58,6 +58,7 @@ public class HttpServerExchange {
     private int statusCode = OK;
     private String statusMessage;
     private final Map<String, List<String>> responseHeaders = new LinkedHashMap<>();
+    private final Map<String, String> responseHeaderKeys = new HashMap<>();
     private ResponseBody responseBody = EMPTY_BODY;
 
     private boolean noContentLength = false;
@@ -73,30 +74,50 @@ public class HttpServerExchange {
         this.in = in;
         this.out = out;
 
-        try (final var reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(request, 0, length)))) {
-            final String firstLine = reader.readLine();
-            if (firstLine == null) throw new IOException("Request head is empty");
-            final int firstSpaceOffset = firstLine.indexOf(Chars.SPACE);
-            if (firstSpaceOffset <= 0)
-                throw new IOException("Malformed request line: '" + firstLine + "'");
+        // Parse the request line and headers straight from the byte array, without the
+        // BufferedReader/InputStreamReader/ByteArrayInputStream wrappers that used to be
+        // allocated per request.
+        if (length <= 0) throw new IOException("Request head is empty");
 
-            final int secondSpaceOffset = firstLine.indexOf(Chars.SPACE, firstSpaceOffset + 1);
-            this.method = firstLine.substring(0, firstSpaceOffset);
-            if (secondSpaceOffset != -1) {
-                this.uri = firstLine.substring(firstSpaceOffset + 1, secondSpaceOffset);
-                this.protocol = firstLine.substring(secondSpaceOffset + 1);
-            } else {
-                this.uri = firstLine.substring(firstSpaceOffset + 1);
-                this.protocol = HTTP_09;
-            }
-            if (HTTP_10.equals(protocol)) responseHeaders.put(CONNECTION, new ArrayList<>(List.of(KEEP_ALIVE)));
-            this.headers = new ArrayList<>();
-            String headerLine; while ((headerLine = reader.readLine()) != null) {
-                if (headerLine.isEmpty()) break;
-                // We do not do header concatenation, it has been deprecated in RFC 7230
-                this.headers.add(headerLine);
-            }
+        int pos = 0;
+        // Request line: terminated by CRLF (or, for HTTP/0.9, the head may end without one).
+        int crlf = indexOfCrlf(request, pos, length);
+        if (crlf < 0) crlf = length;
+        final String firstLine = new String(request, pos, crlf - pos, US_ASCII);
+        pos = (crlf < length) ? crlf + 2 : length;
+        if (firstLine.isEmpty()) throw new IOException("Request head is empty");
+
+        final int firstSpaceOffset = firstLine.indexOf(Chars.SPACE);
+        if (firstSpaceOffset <= 0)
+            throw new IOException("Malformed request line: '" + firstLine + "'");
+
+        final int secondSpaceOffset = firstLine.indexOf(Chars.SPACE, firstSpaceOffset + 1);
+        this.method = firstLine.substring(0, firstSpaceOffset);
+        if (secondSpaceOffset != -1) {
+            this.uri = firstLine.substring(firstSpaceOffset + 1, secondSpaceOffset);
+            this.protocol = firstLine.substring(secondSpaceOffset + 1);
+        } else {
+            this.uri = firstLine.substring(firstSpaceOffset + 1);
+            this.protocol = HTTP_09;
         }
+        if (HTTP_10.equals(protocol)) {
+            responseHeaders.put(CONNECTION, new ArrayList<>(List.of(KEEP_ALIVE)));
+            responseHeaderKeys.put(CONNECTION.toLowerCase(ENGLISH), CONNECTION);
+        }
+
+        this.headers = new ArrayList<>();
+        // Header lines until the blank line that terminates the head.
+        while (pos < length) {
+            final int nextCrlf = indexOfCrlf(request, pos, length);
+            final int lineEnd = (nextCrlf < 0) ? length : nextCrlf;
+            if (lineEnd == pos) break; // blank line: end of headers
+            final String headerLine = new String(request, pos, lineEnd - pos, US_ASCII);
+            // We do not do header concatenation, it has been deprecated in RFC 7230
+            this.headers.add(headerLine);
+            pos = (nextCrlf < 0) ? length : nextCrlf + 2;
+            if (nextCrlf < 0) break;
+        }
+        this.requestHeadersByName = indexRequestHeaders(this.headers);
     }
 
     public InetAddress getSourceIpAddress() {
@@ -115,19 +136,12 @@ public class HttpServerExchange {
         return protocol;
     }
     public String getRequestHeader(final String name) {
-        final var values = getRequestHeaders(name);
-        return values.isEmpty() ? null : values.get(0);
+        final var values = requestHeadersByName.get(name.toLowerCase(ENGLISH));
+        return (values == null || values.isEmpty()) ? null : values.get(0);
     }
     public List<String> getRequestHeaders(final String name) {
-        final var headers = new ArrayList<String>();
-
-        final String searchName = name.toLowerCase(ENGLISH) + HEADER_SEPARATOR;
-        for (final var header : this.headers) {
-            if (header.toLowerCase(ENGLISH).startsWith(searchName))
-                headers.add(header.substring(name.length() + HEADER_SEPARATOR.length()));
-        }
-
-        return headers;
+        final var values = requestHeadersByName.get(name.toLowerCase(ENGLISH));
+        return values == null ? new ArrayList<>() : new ArrayList<>(values);
     }
 
     public String getRequestPath() {
@@ -204,15 +218,19 @@ public class HttpServerExchange {
             return;
         }
         final var key = responseHeaderKey(name);
-        responseHeaders.computeIfAbsent(key == null ? name : key, k -> new ArrayList<>()).add(value);
+        final var storeKey = (key == null) ? name : key;
+        responseHeaders.computeIfAbsent(storeKey, k -> new ArrayList<>()).add(value);
+        if (key == null) responseHeaderKeys.put(name.toLowerCase(ENGLISH), name);
     }
     public void removeResponseHeader(final String name) {
         final var key = responseHeaderKey(name);
-        if (key != null) responseHeaders.remove(key);
+        if (key != null) {
+            responseHeaders.remove(key);
+            responseHeaderKeys.remove(key.toLowerCase(ENGLISH));
+        }
     }
     private String responseHeaderKey(final String name) {
-        for (final var key : responseHeaders.keySet()) if (key.equalsIgnoreCase(name)) return key;
-        return null;
+        return responseHeaderKeys.get(name.toLowerCase(ENGLISH));
     }
 
     public void setNoContentLength() {
@@ -384,26 +402,43 @@ public class HttpServerExchange {
         DATE_FORMAT = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z", ENGLISH)
             .withZone(ZoneId.of("GMT"));
 
+    // Cached for the current second: formatting an Instant on every response is relatively
+    // expensive, and the Date header only has one-second resolution anyway.
+    private static volatile long cachedDateSecond = Long.MIN_VALUE;
+    private static volatile String cachedDateValue;
+
+    /** The Date header value for the current second, cached to avoid reformatting per response. */
+    public static String currentDateHeader() {
+        final long now = java.time.Instant.now().getEpochSecond();
+        if (now != cachedDateSecond) {
+            cachedDateSecond = now;
+            cachedDateValue = DATE_FORMAT.format(java.time.Instant.ofEpochSecond(now));
+        }
+        return cachedDateValue;
+    }
+
     public void sendResponse() throws IOException {
         if (responseSent) return;
 
         final boolean chunked = shouldSendChunked();
 
         if (shouldSendHeadResponse()) {
-            final PrintWriter writer = new PrintWriter(out);
             // HTTP requires CRLF line endings, whatever the platform separator happens to be.
-            writer.print(protocol + SPACE + statusCode + SPACE + getMessageForCode(statusCode, statusMessage) + CRLF);
+            final var head = new StringBuilder();
+            head.append(protocol).append(SPACE).append(statusCode).append(SPACE)
+                .append(getMessageForCode(statusCode, statusMessage)).append(CRLF);
             for (final var header : responseHeaders.entrySet())
                 for (final String value : header.getValue())
-                    writer.print(header.getKey() + HEADER_SEPARATOR + value + CRLF);
+                    head.append(header.getKey()).append(HEADER_SEPARATOR).append(value).append(CRLF);
             if (chunked)
-                writer.print(TRANSFER_ENCODING + HEADER_SEPARATOR + CHUNKED + CRLF);
+                head.append(TRANSFER_ENCODING).append(HEADER_SEPARATOR).append(CHUNKED).append(CRLF);
             if (shouldSendContentLength())
-                writer.print(CONTENT_LENGTH + HEADER_SEPARATOR + responseBody.getLength() + CRLF);
+                head.append(CONTENT_LENGTH).append(HEADER_SEPARATOR).append(responseBody.getLength()).append(CRLF);
             if (getResponseHeader(DATE) == null)
-                writer.print(DATE + HEADER_SEPARATOR + DATE_FORMAT.format(now()) + CRLF);
-            writer.print(CRLF);
-            writer.flush();
+                head.append(DATE).append(HEADER_SEPARATOR).append(currentDateHeader()).append(CRLF);
+            head.append(CRLF);
+            out.write(head.toString().getBytes(US_ASCII));
+            out.flush();
         }
         if (methodAllowsResponseBody()) {
             if (chunked) {
@@ -472,6 +507,27 @@ public class HttpServerExchange {
         if (HTTP_10.equals(protocol)) return true;
         if (HTTP_11.equals(protocol)) return true;
         throw new IOException("HTTP protocol not recognised");
+    }
+
+    /** Finds the offset of the next CRLF at or after start, or -1 when none is present. */
+    private static int indexOfCrlf(final byte[] data, final int start, final int length) {
+        for (int i = start; i + 1 < length; i++) {
+            if (data[i] == '\r' && data[i + 1] == '\n') return i;
+        }
+        return -1;
+    }
+
+    /** Indexes request headers by their lower-cased name for O(1) lookup. */
+    private static Map<String, List<String>> indexRequestHeaders(final List<String> headers) {
+        final var index = new HashMap<String, List<String>>();
+        for (final var header : headers) {
+            final int colon = header.indexOf(':');
+            if (colon < 0 || colon + 1 >= header.length() || header.charAt(colon + 1) != ' ') continue;
+            final String name = header.substring(0, colon).toLowerCase(ENGLISH);
+            final String value = header.substring(colon + 2);
+            index.computeIfAbsent(name, k -> new ArrayList<>()).add(value);
+        }
+        return index;
     }
 
     public void addExchangeCompleteListener(final ExchangeCompleteListener listener) {
