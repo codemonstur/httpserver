@@ -79,6 +79,7 @@ public abstract class ConnectionListener {
 
                 selector.select(50);
                 final Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
+                final java.util.List<SocketChannel> toHandle = new java.util.ArrayList<>();
                 while (iterator.hasNext()) {
                     final SelectionKey key = iterator.next();
                     iterator.remove();
@@ -88,16 +89,21 @@ public abstract class ConnectionListener {
                     } else if (key.isReadable()) {
                         final SocketChannel channel = (SocketChannel) key.channel();
                         key.cancel();
-                        // Wait for cancellation to take effect before the worker switches modes.
-                        selector.wakeup();
+                        toHandle.add(channel);
+                    }
+                }
+                // Force cancellations to take effect before workers switch to blocking mode.
+                try {
+                    selector.selectNow();
+                } catch (final IOException ignored) {}
+                for (final SocketChannel channel : toHandle) {
+                    try {
+                        executor.execute(() -> handleChannel(channel));
+                    } catch (final Exception ignored) {
                         try {
-                            executor.execute(() -> handleChannel(channel));
-                        } catch (final Exception ignored) {
-                            try {
-                                channel.close();
-                            } catch (final IOException ignored2) {}
-                            connections.remove(channel);
-                        }
+                            channel.close();
+                        } catch (final IOException ignored2) {}
+                        connections.remove(channel);
                     }
                 }
             } catch (final IOException ignored) {
@@ -134,19 +140,8 @@ public abstract class ConnectionListener {
     }
 
     private void handleChannel(final SocketChannel channel) {
-        // Ensure the channel is fully unregistered before switching to blocking mode.
-        SelectionKey key = channel.keyFor(selector);
-        if (key != null) {
-            key.cancel();
-        }
-        selector.wakeup();
-        while (channel.isRegistered()) {
-            try {
-                Thread.onSpinWait();
-            } catch (final Exception ignored) {
-                Thread.yield();
-            }
-        }
+        // Cancellations were flushed on the selector thread (selectNow), so the channel is
+        // already unregistered here.
         try {
             channel.configureBlocking(true);
         } catch (final IOException ignored) {
