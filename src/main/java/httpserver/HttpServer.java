@@ -19,7 +19,7 @@ public final class HttpServer extends ConnectionListener {
     }
 
     public int getPort() {
-        return serverSocket.getLocalPort();
+        return super.getPort();
     }
 
 }

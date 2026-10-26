@@ -2,10 +2,15 @@ package httpserver.net;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.util.LinkedList;
-import java.util.List;
+import java.net.InetSocketAddress;
+import java.nio.channels.SelectionKey;
+import java.nio.channels.Selector;
+import java.nio.channels.ServerSocketChannel;
+import java.nio.channels.SocketChannel;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 
 public abstract class ConnectionListener {
@@ -17,6 +22,13 @@ public abstract class ConnectionListener {
     protected final boolean daemon;
     protected final Executor executor;
 
+    protected volatile boolean running = true;
+    protected ServerSocketChannel serverChannel;
+    protected Selector selector;
+    protected Thread selectorThread;
+    protected final Set<SocketChannel> connections = ConcurrentHashMap.newKeySet();
+    protected final ConcurrentLinkedQueue<SocketChannel> pendingRegistrations = new ConcurrentLinkedQueue<>();
+
     protected ConnectionListener(final int port, final InetAddress bindAddress, final boolean daemon,
                                  final int backlog, final Executor executor, final ConnectionHandler handler) {
         this.port = port;
@@ -27,58 +39,173 @@ public abstract class ConnectionListener {
         this.handler = handler;
     }
 
-    // Written by the thread calling stop() and read by the accept loop.
-    protected volatile boolean running = true;
-    protected ServerSocket serverSocket;
-    protected final List<Connection> connections = new LinkedList<>();
-
     public ConnectionListener start() throws IOException {
-        this.serverSocket = new ServerSocket(port, backlog, bindAddress);
-        final var thread = new Thread(() -> {
-            while (running) {
-                try {
-                    // Accept outside the lock: holding it while blocked in accept() would keep
-                    // stop() from ever reaching the connections it has to shut down.
-                    final Socket socket = serverSocket.accept();
+        serverChannel = ServerSocketChannel.open();
+        serverChannel.configureBlocking(false);
+        serverChannel.bind(new InetSocketAddress(bindAddress, port), backlog);
+        selector = Selector.open();
+        serverChannel.register(selector, SelectionKey.OP_ACCEPT);
 
-                    final Connection connection;
-                    try {
-                        connection = new Connection(executor, socket, handler);
-                    } catch (final IOException e) {
-                        try {
-                            socket.close();
-                        } catch (final IOException ignored) {}
-                        continue;
-                    }
-                    synchronized (connections) {
-                        if (!running) {
-                            // stop() ran while this connection was being handed over; make sure it
-                            // does not outlive the server as an untracked, open socket.
-                            connection.stop();
-                        } else {
-                            connections.add(connection);
-                            connections.removeIf(connection2 -> !connection2.isAlive());
-                        }
-                    }
-                } catch (final Exception e) {}
-            }
-        });
-        thread.setDaemon(daemon);
-        thread.start();
+        selectorThread = new Thread(this::runSelector, "httpserver-selector");
+        selectorThread.setDaemon(daemon);
+        selectorThread.start();
 
         return this;
     }
 
-    public void stop() throws IOException {
-        this.running = false;
+    private void runSelector() {
+        while (running) {
+            try {
+                // Process channels handed back by workers (on the selector thread only).
+                SocketChannel pending;
+                while ((pending = pendingRegistrations.poll()) != null) {
+                    try {
+                        if (pending.isOpen() && !pending.isRegistered()) {
+                            pending.configureBlocking(false);
+                            pending.register(selector, SelectionKey.OP_READ);
+                        } else if (pending.isOpen()) {
+                            // Still registered: cancel and re-register on next pass.
+                            pendingRegistrations.offer(pending);
+                        }
+                    } catch (final Exception ignored) {
+                        try {
+                            pending.close();
+                        } catch (final IOException ignored2) {}
+                        connections.remove(pending);
+                    }
+                }
+
+                selector.select(50);
+                final Iterator<SelectionKey> iterator = selector.selectedKeys().iterator();
+                while (iterator.hasNext()) {
+                    final SelectionKey key = iterator.next();
+                    iterator.remove();
+                    if (!key.isValid()) continue;
+                    if (key.isAcceptable()) {
+                        accept();
+                    } else if (key.isReadable()) {
+                        final SocketChannel channel = (SocketChannel) key.channel();
+                        key.cancel();
+                        // Wait for cancellation to take effect before the worker switches modes.
+                        selector.wakeup();
+                        try {
+                            executor.execute(() -> handleChannel(channel));
+                        } catch (final Exception ignored) {
+                            try {
+                                channel.close();
+                            } catch (final IOException ignored2) {}
+                            connections.remove(channel);
+                        }
+                    }
+                }
+            } catch (final IOException ignored) {
+                // Keep the selector alive.
+            }
+        }
 
         try {
-            if (serverSocket != null) serverSocket.close();
-        } finally {
-            synchronized (connections) {
-                connections.forEach(Connection::stop);
-                connections.clear();
+            if (serverChannel != null) serverChannel.close();
+        } catch (final IOException ignored) {}
+        for (final SocketChannel channel : connections) {
+            try {
+                channel.close();
+            } catch (final IOException ignored) {}
+        }
+        connections.clear();
+        try {
+            if (selector != null) selector.close();
+        } catch (final IOException ignored) {}
+    }
+
+    private void accept() {
+        try {
+            SocketChannel channel;
+            while ((channel = serverChannel.accept()) != null) {
+                channel.configureBlocking(false);
+                try {
+                    channel.socket().setTcpNoDelay(true);
+                } catch (final IOException ignored) {}
+                connections.add(channel);
+                channel.register(selector, SelectionKey.OP_READ);
             }
+        } catch (final IOException ignored) {}
+    }
+
+    private void handleChannel(final SocketChannel channel) {
+        // Ensure the channel is fully unregistered before switching to blocking mode.
+        SelectionKey key = channel.keyFor(selector);
+        if (key != null) {
+            key.cancel();
+        }
+        selector.wakeup();
+        while (channel.isRegistered()) {
+            try {
+                Thread.onSpinWait();
+            } catch (final Exception ignored) {
+                Thread.yield();
+            }
+        }
+        try {
+            channel.configureBlocking(true);
+        } catch (final IOException ignored) {
+            try {
+                channel.close();
+            } catch (final IOException ignored2) {}
+            connections.remove(channel);
+            return;
+        }
+
+        boolean close = false;
+        try {
+            final var socket = channel.socket();
+            final var in = socket.getInputStream();
+            final var out = socket.getOutputStream();
+            while (!close) {
+                try {
+                    handler.handleInput(socket, in, out);
+                } catch (final IOException e) {
+                    close = true;
+                    break;
+                }
+                // Drain any requests already buffered on this connection.
+                try {
+                    if (in.available() <= 0) break;
+                } catch (final IOException ignored) {
+                    break;
+                }
+            }
+        } catch (final Exception ignored) {
+            close = true;
+        } finally {
+            if (!close && channel.isOpen() && !channel.socket().isClosed()) {
+                pendingRegistrations.offer(channel);
+                selector.wakeup();
+            } else {
+                try {
+                    channel.close();
+                } catch (final IOException ignored) {}
+                connections.remove(channel);
+            }
+        }
+    }
+
+    public void stop() throws IOException {
+        running = false;
+        try {
+            if (selector != null) selector.wakeup();
+        } catch (final Exception ignored) {}
+        try {
+            if (selectorThread != null) selectorThread.join();
+        } catch (final InterruptedException ignored) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    public int getPort() {
+        try {
+            return ((InetSocketAddress) serverChannel.getLocalAddress()).getPort();
+        } catch (final IOException e) {
+            return port;
         }
     }
 
