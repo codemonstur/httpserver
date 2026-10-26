@@ -1,6 +1,8 @@
 package httpserver.net;
 
 import java.io.IOException;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.channels.SelectionKey;
@@ -156,10 +158,14 @@ public abstract class ConnectionListener {
         }
 
         boolean close = false;
+        BufferedOutputStream out = null;
         try {
             final var socket = channel.socket();
-            final var in = socket.getInputStream();
-            final var out = socket.getOutputStream();
+            final var rawIn = socket.getInputStream();
+            final var rawOut = socket.getOutputStream();
+            // Buffering coalesces the head and body writes into fewer syscalls per response.
+            final var in = new BufferedInputStream(rawIn, 8192);
+            out = new BufferedOutputStream(rawOut, 8192);
             while (!close) {
                 try {
                     handler.handleInput(socket, in, out);
@@ -169,7 +175,7 @@ public abstract class ConnectionListener {
                 }
                 // Drain any requests already buffered on this connection.
                 try {
-                    if (in.available() <= 0) break;
+                    if (rawIn.available() <= 0 && in.available() <= 0) break;
                 } catch (final IOException ignored) {
                     break;
                 }
@@ -177,6 +183,11 @@ public abstract class ConnectionListener {
         } catch (final Exception ignored) {
             close = true;
         } finally {
+            if (out != null) {
+                try {
+                    out.flush();
+                } catch (final IOException ignored) {}
+            }
             if (!close && channel.isOpen() && !channel.socket().isClosed()) {
                 pendingRegistrations.offer(channel);
                 selector.wakeup();
