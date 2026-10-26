@@ -173,7 +173,7 @@ public abstract class ConnectionListener {
                     if (rawIn.available() <= 0 && in.available() <= 0) {
                         // Briefly wait for a follow-up request on a keep-alive connection
                         // to avoid a selector round-trip for back-to-back requests.
-                        for (int spin = 0; spin < 256 && rawIn.available() <= 0 && in.available() <= 0; spin++) {
+                        for (int spin = 0; spin < 128 && rawIn.available() <= 0 && in.available() <= 0; spin++) {
                             Thread.onSpinWait();
                         }
                         if (rawIn.available() <= 0 && in.available() <= 0) break;
