@@ -438,7 +438,6 @@ public class HttpServerExchange {
                 head.append(DATE).append(HEADER_SEPARATOR).append(currentDateHeader()).append(CRLF);
             head.append(CRLF);
             out.write(head.toString().getBytes(US_ASCII));
-            out.flush();
         }
         if (methodAllowsResponseBody()) {
             if (chunked) {
@@ -450,9 +449,9 @@ public class HttpServerExchange {
                 chunkedOut.close();
             } else {
                 responseBody.writeTo(out);
-                out.flush();
             }
         }
+        out.flush();
         responseSent = true;
     }
 
