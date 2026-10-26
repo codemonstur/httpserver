@@ -35,6 +35,7 @@ public class HttpServerBuilder {
     private HttpHandler handler;
     private int maxRequestSize = 8192;
     private long keepAliveTimeout = 60_000;
+    private int threads = Math.max(8, Runtime.getRuntime().availableProcessors() * 4);
     private Executor executor;
 
     public HttpServerBuilder bind(final int port, final String address) {
@@ -75,6 +76,17 @@ public class HttpServerBuilder {
         this.keepAliveTimeout = millis;
         return this;
     }
+    /**
+     * Size of the default worker pool used when no executor is supplied. Has no effect when
+     * an explicit executor is configured.
+     */
+    public HttpServerBuilder threads(final int threads) {
+        if (threads <= 0)
+            throw new IllegalArgumentException("Number of worker threads must be positive");
+        this.threads = threads;
+        return this;
+    }
+
     public HttpServerBuilder handler(final HttpHandler handler) {
         this.handler = handler;
         return this;
@@ -82,7 +94,11 @@ public class HttpServerBuilder {
 
     public HttpServer build() throws UnknownHostException {
         final var bindAddress = InetAddress.getByName(address);
-        final var exec = executor != null ? executor : newWorkerPool();
+        // Reuse one request-head buffer per worker thread instead of allocating 8 KiB per
+        // request; the exchange is fully processed before the worker picks up the next request,
+        // so the buffer is never in use by two exchanges at once.
+        final var requestBuffer = ThreadLocal.withInitial(() -> new byte[maxRequestSize]);
+        final var exec = executor != null ? executor : newWorkerPool(threads);
         // setSoTimeout takes an int, so the configured long is capped rather than truncated.
         final int timeout = toSoTimeout(keepAliveTimeout);
         return new HttpServer(port, bindAddress, daemon, backlog, exec, (socket, in, out) -> {
@@ -90,7 +106,7 @@ public class HttpServerBuilder {
             // give their worker back instead of holding it until the client goes away.
             socket.setSoTimeout(timeout);
 
-            final byte[] data = new byte[maxRequestSize];
+            final byte[] data = requestBuffer.get();
             final int length;
             try {
                 length = readRequestHead(data, in);
@@ -154,10 +170,11 @@ public class HttpServerBuilder {
         return (int) Math.min(millis, Integer.MAX_VALUE);
     }
 
-    private static Executor newWorkerPool() {
-        // A cached pool so that a handful of idle keep-alive connections can never stop the
-        // server from picking up new ones; workers idle out together with those connections.
-        return Executors.newCachedThreadPool(runnable -> {
+    private static Executor newWorkerPool(final int threads) {
+        // A fixed pool sized up front so bursts do not pay thread-creation and teardown costs
+        // on the hot path; idle workers stay put, which also avoids GC pressure from thread
+        // churn. Callers that need elastic sizing can supply their own executor.
+        return Executors.newFixedThreadPool(threads, runnable -> {
             final var thread = new Thread(runnable, "httpserver-worker");
             thread.setDaemon(true);
             return thread;
