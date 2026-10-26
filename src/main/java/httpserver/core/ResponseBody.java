@@ -26,7 +26,6 @@ public interface ResponseBody {
             }
             public void writeTo(OutputStream out) throws IOException {
                 out.write(data, offset, length);
-                out.flush();
             }
         };
     }
@@ -48,8 +47,13 @@ public interface ResponseBody {
                 return UNKNOWN_LENGTH;
             }
             public void writeTo(final OutputStream out) throws IOException {
-                in.transferTo(out);
-                out.flush();
+                // Stream through a larger buffer than InputStream.transferTo's default 8 KiB
+                // to cut the number of chunk boundaries and write calls on the hot path.
+                final byte[] buffer = new byte[64 * 1024];
+                int read;
+                while ((read = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, read);
+                }
             }
         };
     }
@@ -61,14 +65,11 @@ public interface ResponseBody {
             }
             public void writeTo(final OutputStream out) throws IOException {
                 long leftToWrite = length;
-                final byte[] data = new byte[8192];
-                int read; while ((read = in.read(data)) != -1) {
-                    int toWrite = (leftToWrite < read) ? (int)leftToWrite : read;
-                    out.write(data, 0, toWrite);
-                    leftToWrite -= toWrite;
-                    if (leftToWrite <= 0) break;
+                final byte[] data = new byte[64 * 1024];
+                int read; while (leftToWrite > 0 && (read = in.read(data, 0, (int) Math.min(data.length, leftToWrite))) != -1) {
+                    out.write(data, 0, read);
+                    leftToWrite -= read;
                 }
-                out.flush();
             }
         };
     }

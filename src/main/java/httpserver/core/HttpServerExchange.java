@@ -409,7 +409,7 @@ public class HttpServerExchange {
 
     /** The Date header value for the current second, cached to avoid reformatting per response. */
     public static String currentDateHeader() {
-        final long now = java.time.Instant.now().getEpochSecond();
+        final long now = System.currentTimeMillis() / 1000L;
         if (now != cachedDateSecond) {
             cachedDateSecond = now;
             cachedDateValue = DATE_FORMAT.format(java.time.Instant.ofEpochSecond(now));
@@ -450,6 +450,7 @@ public class HttpServerExchange {
                 chunkedOut.close();
             } else {
                 responseBody.writeTo(out);
+                out.flush();
             }
         }
         responseSent = true;

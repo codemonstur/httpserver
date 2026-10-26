@@ -41,7 +41,8 @@ bench: ## Benchmark the server against Undertow
 		-Dexec.classpathScope=test -Dexec.mainClass=benchmarks.Bench
 
 validate: ## Check dependency versions, cves, licenses, and code quality
-	@mvn versions:display-dependency-updates
+	@mvn com.github.codemonstur:maven-check-pom:1.0.0:check validate
+	@mvn versions:display-dependency-updates "-Dmaven.version.ignore=(?i).*(alpha|beta|rc|-m[0-9]+|snapshot).*"
 	@mvn versions:display-plugin-updates
 	@mvn validate -P vulnerabilities
 	@mvn validate -P licenses
