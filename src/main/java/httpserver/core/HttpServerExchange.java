@@ -45,7 +45,6 @@ public class HttpServerExchange {
     private final String uri;
     private final String protocol;
     private final List<String> headers;
-    private final Map<String, List<String>> requestHeadersByName;
 
     private final Socket socket;
     private final InputStream in;
@@ -117,7 +116,6 @@ public class HttpServerExchange {
             pos = (nextCrlf < 0) ? length : nextCrlf + 2;
             if (nextCrlf < 0) break;
         }
-        this.requestHeadersByName = indexRequestHeaders(this.headers);
     }
 
     public InetAddress getSourceIpAddress() {
@@ -136,12 +134,39 @@ public class HttpServerExchange {
         return protocol;
     }
     public String getRequestHeader(final String name) {
-        final var values = requestHeadersByName.get(name.toLowerCase(ENGLISH));
-        return (values == null || values.isEmpty()) ? null : values.get(0);
+        for (final String header : headers) {
+            if (header.length() < name.length() + 2) continue;
+            if (header.charAt(name.length()) != ':') continue;
+            if (header.charAt(name.length() + 1) != ' ') continue;
+            boolean match = true;
+            for (int i = 0; i < name.length(); i++) {
+                char a = header.charAt(i);
+                char b = name.charAt(i);
+                if (a >= 'A' && a <= 'Z') a += 32;
+                if (b >= 'A' && b <= 'Z') b += 32;
+                if (a != b) { match = false; break; }
+            }
+            if (match) return header.substring(name.length() + 2);
+        }
+        return null;
     }
     public List<String> getRequestHeaders(final String name) {
-        final var values = requestHeadersByName.get(name.toLowerCase(ENGLISH));
-        return values == null ? new ArrayList<>() : new ArrayList<>(values);
+        final var values = new ArrayList<String>();
+        for (final String header : headers) {
+            if (header.length() < name.length() + 2) continue;
+            if (header.charAt(name.length()) != ':') continue;
+            if (header.charAt(name.length() + 1) != ' ') continue;
+            boolean match = true;
+            for (int i = 0; i < name.length(); i++) {
+                char a = header.charAt(i);
+                char b = name.charAt(i);
+                if (a >= 'A' && a <= 'Z') a += 32;
+                if (b >= 'A' && b <= 'Z') b += 32;
+                if (a != b) { match = false; break; }
+            }
+            if (match) values.add(header.substring(name.length() + 2));
+        }
+        return values;
     }
 
     public String getRequestPath() {
@@ -515,19 +540,6 @@ public class HttpServerExchange {
             if (data[i] == '\r' && data[i + 1] == '\n') return i;
         }
         return -1;
-    }
-
-    /** Indexes request headers by their lower-cased name for O(1) lookup. */
-    private static Map<String, List<String>> indexRequestHeaders(final List<String> headers) {
-        final var index = new HashMap<String, List<String>>();
-        for (final var header : headers) {
-            final int colon = header.indexOf(':');
-            if (colon < 0 || colon + 1 >= header.length() || header.charAt(colon + 1) != ' ') continue;
-            final String name = header.substring(0, colon).toLowerCase(ENGLISH);
-            final String value = header.substring(colon + 2);
-            index.computeIfAbsent(name, k -> new ArrayList<>()).add(value);
-        }
-        return index;
     }
 
     public void addExchangeCompleteListener(final ExchangeCompleteListener listener) {
