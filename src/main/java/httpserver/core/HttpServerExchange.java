@@ -449,7 +449,8 @@ public class HttpServerExchange {
 
         if (shouldSendHeadResponse()) {
             // HTTP requires CRLF line endings, whatever the platform separator happens to be.
-            final var head = new StringBuilder();
+            final var head = HEAD_BUILDER.get();
+            head.setLength(0);
             head.append(protocol).append(SPACE).append(statusCode).append(SPACE)
                 .append(getMessageForCode(statusCode, statusMessage)).append(CRLF);
             for (final var header : responseHeaders.entrySet())
@@ -533,6 +534,8 @@ public class HttpServerExchange {
         if (HTTP_11.equals(protocol)) return true;
         throw new IOException("HTTP protocol not recognised");
     }
+
+    private static final ThreadLocal<StringBuilder> HEAD_BUILDER = ThreadLocal.withInitial(() -> new StringBuilder(256));
 
     /** Finds the offset of the next CRLF at or after start, or -1 when none is present. */
     private static int indexOfCrlf(final byte[] data, final int start, final int length) {
