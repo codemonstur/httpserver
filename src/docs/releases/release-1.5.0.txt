@@ -2,3 +2,28 @@
 
 Added printText, printVersion and printBanner handler
 Added SessionMethodPathRouting
+
+Changes since httpserver-1.5.0:
+- Added ideas for performance, build fixes, githooks, actions
+- Reuse a ThreadLocal StringBuilder for response heads
+- Replace request-header index map with allocation-free linear scan
+- Reduce keep-alive spin count to 128
+- Flush selector cancellations via selectNow before dispatching workers
+- Tune keep-alive spin count to 256
+- Spin briefly for follow-up keep-alive requests before returning to selector
+- Buffer socket I/O in ConnectionListener to coalesce syscalls
+- Reuse per-thread request buffer and use fixed default worker pool
+- Reduce response syscalls: single flush per response
+- Implement NIO non-blocking I/O with selector-based accept and per-request dispatch
+- Apply performance micro-optimizations from todo (streaming, date caching)
+- naming
+- Small speed increases, build fixes, added documentation
+- Converted to tests to Junit 6
+- Create the release notes directory before writing the release notes
+- chore: commit pending local changes
+- Add optional Brotli compression handler and make coverage target
+- Added chunked transfer encoding, websockets and a benchmark suite
+- Many bugfixes
+- Target Java 17, Fixed bugs, Added tests. Fixed build
+- Forced LF
+- Updated version
