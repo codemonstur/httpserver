@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help clean build test bench validate release-notes deploy coverage
+.PHONY: help clean build test bench validate release-notes deploy coverage mutation
 
 NAME=`xmllint --xpath "//project/artifactId/text()" pom.xml`
 VERSION=`xmllint --xpath "//project/version/text()" pom.xml`
@@ -39,6 +39,12 @@ bench: ## Benchmark the server against Undertow
 	@mvn -q test-compile
 	@MAVEN_OPTS="-Xms512m -Xmx512m" mvn -q org.codehaus.mojo:exec-maven-plugin:3.5.0:java \
 		-Dexec.classpathScope=test -Dexec.mainClass=benchmarks.Bench
+
+mutation: ## Run mutation tests on the unit tests
+	@$(INFO) "Running mutation tests"
+	@mvn -P mutation test
+	@$(INFO) "Mutation report written to target/pit-reports/index.html"
+
 
 validate: ## Check dependency versions, cves, licenses, and code quality
 	@mvn com.github.codemonstur:maven-check-pom:1.0.0:check validate
