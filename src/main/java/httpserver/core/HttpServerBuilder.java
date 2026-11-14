@@ -26,6 +26,9 @@ import static httpserver.util.Strings.*;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.time.Instant.now;
 
+/**
+ * The {@code HttpServerBuilder} class.
+ */
 public class HttpServerBuilder {
 
     private int port = 8080;
@@ -38,6 +41,13 @@ public class HttpServerBuilder {
     private int threads = Math.max(8, Runtime.getRuntime().availableProcessors() * 4);
     private Executor executor;
 
+    /**
+     * Returns the result of {@code bind}.
+     *
+     * @param port the port
+     * @param address the address
+     * @return the result
+     */
     public HttpServerBuilder bind(final int port, final String address) {
         if (port < 0 || port > 65535)
             throw new IllegalArgumentException("port value must be between 0 and 65535");
@@ -45,20 +55,44 @@ public class HttpServerBuilder {
         this.address = address;
         return this;
     }
+    /**
+     * Returns the result of {@code executor}.
+     *
+     * @param executor the executor
+     * @return the result
+     */
     public HttpServerBuilder executor(final Executor executor) {
         this.executor = executor;
         return this;
     }
+    /**
+     * Returns the result of {@code backlog}.
+     *
+     * @param backlog the backlog
+     * @return the result
+     */
     public HttpServerBuilder backlog(final int backlog) {
         if (backlog < 0)
             throw new IllegalArgumentException("Number of waiting connections must not be negative");
         this.backlog = backlog;
         return this;
     }
+    /**
+     * Returns the result of {@code daemon}.
+     *
+     * @param daemon the daemon
+     * @return the result
+     */
     public HttpServerBuilder daemon(final boolean daemon) {
         this.daemon = daemon;
         return this;
     }
+    /**
+     * Returns the result of {@code maxRequestHeadSize}.
+     *
+     * @param maxRequestSize the max request size
+     * @return the result
+     */
     public HttpServerBuilder maxRequestHeadSize(final int maxRequestSize) {
         if (maxRequestSize <= 1024)
             throw new IllegalArgumentException("Max request size must be larger than 1024");
@@ -69,6 +103,9 @@ public class HttpServerBuilder {
      * How long an idle keep-alive connection may wait for the next request before it is closed.
      * Without a timeout an idle connection pins its worker thread for as long as the client
      * keeps the socket open, which starves the pool after enough connections.
+     
+     * @param millis the millis
+     * @return the result
      */
     public HttpServerBuilder keepAliveTimeout(final long millis) {
         if (millis <= 0)
@@ -79,6 +116,9 @@ public class HttpServerBuilder {
     /**
      * Size of the default worker pool used when no executor is supplied. Has no effect when
      * an explicit executor is configured.
+     
+     * @param threads the threads
+     * @return the result
      */
     public HttpServerBuilder threads(final int threads) {
         if (threads <= 0)
@@ -87,11 +127,23 @@ public class HttpServerBuilder {
         return this;
     }
 
+    /**
+     * Returns the result of {@code handler}.
+     *
+     * @param handler the handler
+     * @return the result
+     */
     public HttpServerBuilder handler(final HttpHandler handler) {
         this.handler = handler;
         return this;
     }
 
+    /**
+     * Returns the result of {@code build}.
+     *
+     * @return the result
+     * @throws UnknownHostException if the operation fails
+     */
     public HttpServer build() throws UnknownHostException {
         final var bindAddress = InetAddress.getByName(address);
         // Reuse one request-head buffer per worker thread instead of allocating 8 KiB per
@@ -269,4 +321,10 @@ public class HttpServerBuilder {
         return HTTP_11;
     }
 
+
+    /**
+     * Creates a new instance.
+     */
+    public HttpServerBuilder() {
+    }
 }

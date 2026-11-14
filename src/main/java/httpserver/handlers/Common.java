@@ -24,17 +24,36 @@ import static httpserver.util.Encoding.encodeHex;
 import static httpserver.util.Encoding.sha256;
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+/**
+ * The {@code Common} enum.
+ */
 public enum Common {;
 
+    /**
+     * Returns the result of {@code printText}.
+     *
+     * @param text the text
+     * @return the result
+     */
     public static HttpHandler printText(final String text) {
         return exchange -> respond(exchange).status(OK).contentType(text_plain).send(text);
     }
 
+    /**
+     * Returns the result of {@code printVersion}.
+     *
+     * @return the result
+     */
     public static HttpHandler printVersion() {
         final var version = Functions.orDefault(Common.class.getPackage().getImplementationVersion(), "unknown");
         return exchange -> respond(exchange).status(OK).contentType(text_plain).send(version);
     }
 
+    /**
+     * Returns the result of {@code printBanner}.
+     *
+     * @return the result
+     */
     public static HttpHandler printBanner() {
         final var manifest = Common.class.getPackage();
         final var title = Functions.orDefault(manifest.getImplementationTitle(), "unknown");
@@ -43,6 +62,14 @@ public enum Common {;
         return exchange -> respond(exchange).status(OK).contentType(text_plain).send(banner);
     }
 
+    /**
+     * Returns the result of {@code logError}.
+     *
+     * @param onException the on exception
+     * @param onError the on error
+     * @param next the next
+     * @return the result
+     */
     public static HttpHandler logError(final Consumer<Exception> onException, final Consumer<Error> onError, final HttpHandler next) {
         return exchange -> {
             try {
@@ -61,10 +88,24 @@ public enum Common {;
         };
     }
 
+    /**
+     * Returns the result of {@code pathPrefix}.
+     *
+     * @param prefix the prefix
+     * @param ifTrue the if true
+     * @param ifFalse the if false
+     * @return the result
+     */
     public static HttpHandler pathPrefix(final String prefix, final HttpHandler ifTrue, final HttpHandler ifFalse) {
         return exchange -> (exchange.getRequestPath().startsWith(prefix) ? ifTrue : ifFalse).handleRequest(exchange);
     }
 
+    /**
+     * Returns the result of {@code staticHtml}.
+     *
+     * @param content the content
+     * @return the result
+     */
     public static HttpHandler staticHtml(final String content) {
         final String etag = String.format("\"%s\"", encodeHex(sha256(content, UTF_8)));
 
@@ -82,6 +123,10 @@ public enum Common {;
     /**
      * If-None-Match uses the weak comparison function, and the header may hold a list of tags or
      * the "*" wildcard, so a plain equality check would miss most conditional requests.
+     
+     * @param request the request
+     * @param etag the etag
+     * @return whether the condition holds
      */
     public static boolean matchesEtag(final HttpServerExchange request, final String etag) {
         final String header = request.getRequestHeader(IF_NONE_MATCH);
@@ -98,6 +143,14 @@ public enum Common {;
         return tag.startsWith("W/") ? tag.substring(2) : tag;
     }
 
+    /**
+     * Performs the {@code checkEtag} operation.
+     *
+     * @param etag the etag
+     * @param exchange the exchange
+     * @param next the next
+     * @throws Exception if the operation fails
+     */
     public static void checkEtag(final String etag, final HttpServerExchange exchange, final HttpHandler next) throws Exception {
         if (matchesEtag(exchange, etag)) {
             respond(exchange).status(NOT_MODIFIED).send();
@@ -106,23 +159,53 @@ public enum Common {;
         next.handleRequest(exchange);
     }
 
+    /**
+     * Returns the result of {@code html404}.
+     *
+     * @param html the html
+     * @return the result
+     */
     public static HttpHandler html404(final String html) {
         return exchange -> respond(exchange).status(NOT_FOUND)
             .cache(NEVER_CACHE).contentType(text_html).send(html);
     }
 
+    /**
+     * Returns the result of {@code statusCode}.
+     *
+     * @param code the code
+     * @return the result
+     */
     public static HttpHandler statusCode(final int code) {
         return exchange -> exchange.setStatusCode(code);
     }
 
+    /**
+     * Returns the result of {@code redirect}.
+     *
+     * @param url the url
+     * @return the result
+     */
     public static HttpHandler redirect(final String url) {
         return exchange -> respond(exchange).status(FOUND).header(LOCATION, url).send();
     }
 
+    /**
+     * Returns the result of {@code noSuchApiEndpoint}.
+     *
+     * @return the result
+     */
     public static HttpHandler noSuchApiEndpoint() {
         return exchange -> respondError(exchange, BAD_REQUEST, BAD_REQUEST, "No such API endpoint");
     }
 
+    /**
+     * Returns the result of {@code securityHeaders}.
+     *
+     * @param isSecure the is secure
+     * @param next the next
+     * @return the result
+     */
     public static HttpHandler securityHeaders(final boolean isSecure, final HttpHandler next) {
         return exchange -> {
             if (isSecure) {
@@ -137,12 +220,26 @@ public enum Common {;
         };
     }
 
+    /**
+     * Returns the result of {@code singlePageApp}.
+     *
+     * @param pageContent the page content
+     * @param pageURIs the page uris
+     * @return the result
+     */
     public static HttpHandler singlePageApp(final String pageContent, final Set<String> pageURIs) {
         final var notFound = html404(pageContent);
         final var found = staticHtml(pageContent);
         return exchange -> (pageURIs.contains(exchange.getRequestPath()) ? found : notFound).handleRequest(exchange);
     }
 
+    /**
+     * Returns the result of {@code resourceHandler}.
+     *
+     * @param wwwroot the wwwroot
+     * @param fallback the fallback
+     * @return the result
+     */
     public static HttpHandler resourceHandler(final String wwwroot, final HttpHandler fallback) {
         final var etagMap = new HashMap<String, String>();
         return exchange -> {

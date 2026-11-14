@@ -17,8 +17,17 @@ import static httpserver.core.StatusCode.NO_CONTENT;
 import static httpserver.util.Functions.isNullOrEmpty;
 import static java.util.Locale.ENGLISH;
 
+/**
+ * The {@code Compression} enum.
+ */
 public enum Compression {;
 
+    /**
+     * Returns the result of {@code compress}.
+     *
+     * @param next the next
+     * @return the result
+     */
     public static HttpHandler compress(final HttpHandler next) {
         return exchange -> {
             next.handleRequest(exchange);
@@ -34,6 +43,12 @@ public enum Compression {;
         };
     }
 
+    /**
+     * Returns the result of {@code compressGzip}.
+     *
+     * @param next the next
+     * @return the result
+     */
     public static HttpHandler compressGzip(final HttpHandler next) {
         return exchange -> {
             next.handleRequest(exchange);
@@ -43,6 +58,12 @@ public enum Compression {;
             }
         };
     }
+    /**
+     * Returns the result of {@code compressDeflate}.
+     *
+     * @param next the next
+     * @return the result
+     */
     public static HttpHandler compressDeflate(final HttpHandler next) {
         return exchange -> {
             next.handleRequest(exchange);
@@ -53,6 +74,12 @@ public enum Compression {;
         };
     }
 
+    /**
+     * Performs the {@code compressGzip} operation.
+     *
+     * @param exchange the exchange
+     * @throws IOException if the operation fails
+     */
     public static void compressGzip(final HttpServerExchange exchange) throws IOException {
         if (!canCompress(exchange)) return;
         exchange.setResponseHeader(CONTENT_ENCODING, "gzip");
@@ -65,6 +92,12 @@ public enum Compression {;
         }
     }
 
+    /**
+     * Performs the {@code compressDeflate} operation.
+     *
+     * @param exchange the exchange
+     * @throws IOException if the operation fails
+     */
     public static void compressDeflate(final HttpServerExchange exchange) throws IOException {
         if (!canCompress(exchange)) return;
         exchange.setResponseHeader(CONTENT_ENCODING, "deflate");
@@ -107,6 +140,10 @@ public enum Compression {;
     /**
      * Honours the quality value: "gzip;q=0" means the client does not want gzip, and "*"
      * accepts anything that is not listed explicitly.
+     
+     * @param exchange the exchange
+     * @param encoding the encoding
+     * @return whether the condition holds
      */
     public static boolean acceptsEncoding(final HttpServerExchange exchange, final String encoding) {
         final String acceptedEncodings = exchange.getRequestHeader(ACCEPT_ENCODING);

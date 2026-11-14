@@ -12,6 +12,24 @@ import java.io.OutputStream;
  */
 public enum Frames {;
 
+    /**
+     * The {@code OP_PONG} constant.
+     */
+    /**
+     * The {@code OP_PING} constant.
+     */
+    /**
+     * The {@code OP_CLOSE} constant.
+     */
+    /**
+     * The {@code OP_BINARY} constant.
+     */
+    /**
+     * The {@code OP_TEXT} constant.
+     */
+    /**
+     * The {@code OP_CONTINUATION} constant.
+     */
     public static final int
         OP_CONTINUATION = 0x0,
         OP_TEXT = 0x1,
@@ -20,11 +38,26 @@ public enum Frames {;
         OP_PING = 0x9,
         OP_PONG = 0xA;
 
+    /**
+     * The {@code MAX_PAYLOAD} constant.
+     */
     public static final long MAX_PAYLOAD = 16 * 1024 * 1024;
 
+    /**
+     * The {@code Frame} class.
+     */
     public static final class Frame {
+        /**
+         * The {@code fin} field.
+         */
         public final boolean fin;
+        /**
+         * The {@code opcode} field.
+         */
         public final int opcode;
+        /**
+         * The {@code payload} field.
+         */
         public final byte[] payload;
 
         Frame(final boolean fin, final int opcode, final byte[] payload) {
@@ -38,6 +71,10 @@ public enum Frames {;
      * Reads the next frame, or returns null at the clean end of the stream. A peer that
      * violates the protocol fails with a WebSocketException carrying the close code that
      * must be reported before the connection goes.
+     
+     * @param in the in
+     * @return the result
+     * @throws IOException if the operation fails
      */
     public static Frame read(final InputStream in) throws IOException {
         final int first = in.read();
@@ -79,6 +116,12 @@ public enum Frames {;
     /**
      * Writes an unmasked server frame and flushes it: half a frame held back on a buffer
      * helps nobody, least of all a client waiting on the rest of a message.
+     
+     * @param out the out
+     * @param fin the fin
+     * @param opcode the opcode
+     * @param payload the payload
+     * @throws IOException if the operation fails
      */
     public static void write(final OutputStream out, final boolean fin, final int opcode,
                              final byte[] payload) throws IOException {

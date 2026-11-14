@@ -15,22 +15,71 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executor;
 
+/**
+ * The {@code ConnectionListener} class.
+ */
 public abstract class ConnectionListener {
 
+    /**
+     * The {@code backlog} field.
+     */
     protected final int backlog;
+    /**
+     * The {@code handler} field.
+     */
     protected final ConnectionHandler handler;
+    /**
+     * The {@code port} field.
+     */
     protected final int port;
+    /**
+     * The {@code bindAddress} field.
+     */
     protected final InetAddress bindAddress;
+    /**
+     * The {@code daemon} field.
+     */
     protected final boolean daemon;
+    /**
+     * The {@code executor} field.
+     */
     protected final Executor executor;
 
+    /**
+     * The {@code running} field.
+     */
     protected volatile boolean running = true;
+    /**
+     * The {@code serverChannel} field.
+     */
     protected ServerSocketChannel serverChannel;
+    /**
+     * The {@code selector} field.
+     */
     protected Selector selector;
+    /**
+     * The {@code selectorThread} field.
+     */
     protected Thread selectorThread;
+    /**
+     * The {@code connections} field.
+     */
     protected final Set<SocketChannel> connections = ConcurrentHashMap.newKeySet();
+    /**
+     * The {@code pendingRegistrations} field.
+     */
     protected final ConcurrentLinkedQueue<SocketChannel> pendingRegistrations = new ConcurrentLinkedQueue<>();
 
+    /**
+     * Creates a new instance.
+     *
+     * @param port the port
+     * @param bindAddress the bind address
+     * @param daemon the daemon
+     * @param backlog the backlog
+     * @param executor the executor
+     * @param handler the handler
+     */
     protected ConnectionListener(final int port, final InetAddress bindAddress, final boolean daemon,
                                  final int backlog, final Executor executor, final ConnectionHandler handler) {
         this.port = port;
@@ -41,6 +90,12 @@ public abstract class ConnectionListener {
         this.handler = handler;
     }
 
+    /**
+     * Returns the result of {@code start}.
+     *
+     * @return the result
+     * @throws IOException if the operation fails
+     */
     public ConnectionListener start() throws IOException {
         serverChannel = ServerSocketChannel.open();
         serverChannel.configureBlocking(false);
@@ -202,6 +257,11 @@ public abstract class ConnectionListener {
         }
     }
 
+    /**
+     * Performs the {@code stop} operation.
+     *
+     * @throws IOException if the operation fails
+     */
     public void stop() throws IOException {
         running = false;
         try {
@@ -214,6 +274,11 @@ public abstract class ConnectionListener {
         }
     }
 
+    /**
+     * Returns the port.
+     *
+     * @return the result
+     */
     public int getPort() {
         try {
             return ((InetSocketAddress) serverChannel.getLocalAddress()).getPort();

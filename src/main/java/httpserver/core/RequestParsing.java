@@ -5,8 +5,19 @@ import httpserver.util.LengthRestrictedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * The {@code RequestParsing} enum.
+ */
 public enum RequestParsing {;
 
+    /**
+     * Returns the result of {@code readRequestHead}.
+     *
+     * @param data the data
+     * @param in the in
+     * @return the result
+     * @throws IOException if the operation fails
+     */
     public static int readRequestHead(final byte[] data, final InputStream in) throws IOException {
         data[0] = (byte) in.read();
         data[1] = (byte) in.read();
@@ -29,6 +40,12 @@ public enum RequestParsing {;
             && data[offset-1] == '\n';
     }
 
+    /**
+     * Performs the {@code discardRemainingRequestBody} operation.
+     *
+     * @param exchange the exchange
+     * @throws IOException if the operation fails
+     */
     public static void discardRemainingRequestBody(final HttpServerExchange exchange) throws IOException {
         final var in = exchange.getInputStream();
         // A client waiting for a 100 Continue will never send the body we are about to drain,

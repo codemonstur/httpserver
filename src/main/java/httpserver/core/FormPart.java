@@ -16,6 +16,9 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 //
 // TODO add Content-Disposition header parsing
 // TODO test if the byte[] containing the form data is correct
+/**
+ * The {@code FormPart} class.
+ */
 public final class FormPart {
 
     private static final byte[] CRLF_CRLF = "\r\n\r\n".getBytes(UTF_8);
@@ -32,6 +35,14 @@ public final class FormPart {
     private final int middle;
     private final int end;
 
+    /**
+     * Creates a new instance.
+     *
+     * @param data the data
+     * @param start the start
+     * @param end the end
+     * @throws IOException if the operation fails
+     */
     public FormPart(final byte[] data, final int start, final int end) throws IOException {
         middle = FormParsing.indexOf(data, CRLF_CRLF, start, end);
         if (middle == -1) throw new IOException("Malformed form, no CRLFCRLF between boundaries");
@@ -54,21 +65,46 @@ public final class FormPart {
         this.end = end;
     }
 
+    /**
+     * Returns the content type.
+     *
+     * @return the result
+     */
     public String getContentType() {
         return type;
     }
+    /**
+     * Returns the disposition.
+     *
+     * @return the result
+     */
     public String getDisposition() {
         return disposition;
     }
+    /**
+     * Returns the headers.
+     *
+     * @return the result
+     */
     public List<String> getHeaders() {
         return headers;
     }
 
+    /**
+     * Returns the form part data.
+     *
+     * @return the result
+     */
     public byte[] getFormPartData() {
         final byte[] raw = new byte[end - start];
         System.arraycopy(data, start, raw, 0, raw.length);
         return raw;
     }
+    /**
+     * Returns the data.
+     *
+     * @return the result
+     */
     public byte[] getData() {
         final byte[] raw = new byte[end - middle];
         System.arraycopy(data, middle, raw, 0, raw.length);

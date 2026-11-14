@@ -14,20 +14,37 @@ import static httpserver.core.StatusCode.OK;
 import static java.lang.System.currentTimeMillis;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
+/**
+ * The {@code ServerSentEvents} class.
+ */
 public class ServerSentEvents implements HttpHandler {
 
     private final Timer timer = new Timer("server-sent-events-keep-alive", true);
     private final List<PrintWriter> connections = new ArrayList<>();
 
+    /**
+     * Creates a new instance.
+     */
     public ServerSentEvents() {
         this(MINUTES.toMillis(1));
     }
+    /**
+     * Creates a new instance.
+     *
+     * @param keepAliveMillis the keep alive millis
+     */
     public ServerSentEvents(final long keepAliveMillis) {
         if (keepAliveMillis < 1000)
             throw new IllegalArgumentException("Set a reasonable time between keep-alive messages; x >= 1000");
         this.timer.scheduleAtFixedRate(newKeepAliveTask(connections), keepAliveMillis, keepAliveMillis);
     }
 
+    /**
+     * Performs the {@code handleRequest} operation.
+     *
+     * @param exchange the exchange
+     * @throws Exception if the operation fails
+     */
     @Override
     public void handleRequest(final HttpServerExchange exchange) throws Exception {
         exchange.setStatusCode(OK);
@@ -53,12 +70,30 @@ public class ServerSentEvents implements HttpHandler {
         }
     }
 
+    /**
+     * Performs the {@code sendMessage} operation.
+     *
+     * @param message the message
+     */
     public void sendMessage(final String message) {
         sendMessage(null, null, message);
     }
+    /**
+     * Performs the {@code sendMessage} operation.
+     *
+     * @param id the id
+     * @param message the message
+     */
     public void sendMessage(final String id, final String message) {
         sendMessage(id, null, message);
     }
+    /**
+     * Performs the {@code sendMessage} operation.
+     *
+     * @param id the id
+     * @param type the type
+     * @param message the message
+     */
     public void sendMessage(final String id, final String type, final String message) {
         broadcast(newSseEvent(id, type, message));
     }

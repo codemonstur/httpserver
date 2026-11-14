@@ -4,8 +4,140 @@ import java.util.Map;
 
 import static java.util.Map.entry;
 
+/**
+ * The {@code StatusCode} enum.
+ */
 public enum StatusCode {;
 
+    /**
+     * The {@code NETWORK_AUTHENTICATION_REQUIRED} constant.
+     */
+    /**
+     * The {@code HTTP_VERSION_NOT_SUPPORTED} constant.
+     */
+    /**
+     * The {@code GATEWAY_TIMEOUT} constant.
+     */
+    /**
+     * The {@code SERVICE_UNAVAILABLE} constant.
+     */
+    /**
+     * The {@code BAD_GATEWAY} constant.
+     */
+    /**
+     * The {@code NOT_IMPLEMENTED} constant.
+     */
+    /**
+     * The {@code INTERNAL_SERVER_ERROR} constant.
+     */
+    /**
+     * The {@code REQUEST_HEADER_FIELDS_TOO_LARGE} constant.
+     */
+    /**
+     * The {@code TOO_MANY_REQUESTS} constant.
+     */
+    /**
+     * The {@code PRECONDITION_REQUIRED} constant.
+     */
+    /**
+     * The {@code UPGRADE_REQUIRED} constant.
+     */
+    /**
+     * The {@code EXPECTATION_FAILED} constant.
+     */
+    /**
+     * The {@code REQUESTED_RANGE_NOT_SATISFIABLE} constant.
+     */
+    /**
+     * The {@code UNSUPPORTED_MEDIA_TYPE} constant.
+     */
+    /**
+     * The {@code REQUEST_URI_TOO_LONG} constant.
+     */
+    /**
+     * The {@code REQUEST_ENTITY_TOO_LARGE} constant.
+     */
+    /**
+     * The {@code PRECONDITION_FAILED} constant.
+     */
+    /**
+     * The {@code LENGTH_REQUIRED} constant.
+     */
+    /**
+     * The {@code GONE} constant.
+     */
+    /**
+     * The {@code CONFLICT} constant.
+     */
+    /**
+     * The {@code REQUEST_TIMEOUT} constant.
+     */
+    /**
+     * The {@code PROXY_AUTHENTICATION_REQUIRED} constant.
+     */
+    /**
+     * The {@code NOT_ACCEPTABLE} constant.
+     */
+    /**
+     * The {@code METHOD_NOT_ALLOWED} constant.
+     */
+    /**
+     * The {@code NOT_FOUND} constant.
+     */
+    /**
+     * The {@code FORBIDDEN} constant.
+     */
+    /**
+     * The {@code PAYMENT_REQUIRED} constant.
+     */
+    /**
+     * The {@code UNAUTHORIZED} constant.
+     */
+    /**
+     * The {@code BAD_REQUEST} constant.
+     */
+    /**
+     * The {@code TEMPORARY_REDIRECT} constant.
+     */
+    /**
+     * The {@code USE_PROXY} constant.
+     */
+    /**
+     * The {@code NOT_MODIFIED} constant.
+     */
+    /**
+     * The {@code SEE_OTHER} constant.
+     */
+    /**
+     * The {@code FOUND} constant.
+     */
+    /**
+     * The {@code MOVED_PERMANENTLY} constant.
+     */
+    /**
+     * The {@code PARTIAL_CONTENT} constant.
+     */
+    /**
+     * The {@code RESET_CONTENT} constant.
+     */
+    /**
+     * The {@code NO_CONTENT} constant.
+     */
+    /**
+     * The {@code ACCEPTED} constant.
+     */
+    /**
+     * The {@code CREATED} constant.
+     */
+    /**
+     * The {@code OK} constant.
+     */
+    /**
+     * The {@code SWITCHING_PROTOCOLS} constant.
+     */
+    /**
+     * The {@code CONTINUE} constant.
+     */
     public static final int
         CONTINUE = 100,
         SWITCHING_PROTOCOLS = 101,
@@ -51,6 +183,135 @@ public enum StatusCode {;
         HTTP_VERSION_NOT_SUPPORTED = 505,
         NETWORK_AUTHENTICATION_REQUIRED = 511;
 
+    /**
+     * The {@code MESSAGE_NETWORK_AUTHENTICATION_REQUIRED} constant.
+     */
+    /**
+     * The {@code MESSAGE_HTTP_VERSION_NOT_SUPPORTED} constant.
+     */
+    /**
+     * The {@code MESSAGE_GATEWAY_TIMEOUT} constant.
+     */
+    /**
+     * The {@code MESSAGE_SERVICE_UNAVAILABLE} constant.
+     */
+    /**
+     * The {@code MESSAGE_BAD_GATEWAY} constant.
+     */
+    /**
+     * The {@code MESSAGE_NOT_IMPLEMENTED} constant.
+     */
+    /**
+     * The {@code MESSAGE_INTERNAL_SERVER_ERROR} constant.
+     */
+    /**
+     * The {@code MESSAGE_REQUEST_HEADER_FIELDS_TOO_LARGE} constant.
+     */
+    /**
+     * The {@code MESSAGE_TOO_MANY_REQUESTS} constant.
+     */
+    /**
+     * The {@code MESSAGE_PRECONDITION_REQUIRED} constant.
+     */
+    /**
+     * The {@code MESSAGE_UPGRADE_REQUIRED} constant.
+     */
+    /**
+     * The {@code MESSAGE_EXPECTATION_FAILED} constant.
+     */
+    /**
+     * The {@code MESSAGE_REQUESTED_RANGE_NOT_SATISFIABLE} constant.
+     */
+    /**
+     * The {@code MESSAGE_UNSUPPORTED_MEDIA_TYPE} constant.
+     */
+    /**
+     * The {@code MESSAGE_REQUEST_URI_TOO_LONG} constant.
+     */
+    /**
+     * The {@code MESSAGE_REQUEST_ENTITY_TOO_LARGE} constant.
+     */
+    /**
+     * The {@code MESSAGE_PRECONDITION_FAILED} constant.
+     */
+    /**
+     * The {@code MESSAGE_LENGTH_REQUIRED} constant.
+     */
+    /**
+     * The {@code MESSAGE_GONE} constant.
+     */
+    /**
+     * The {@code MESSAGE_CONFLICT} constant.
+     */
+    /**
+     * The {@code MESSAGE_REQUEST_TIMEOUT} constant.
+     */
+    /**
+     * The {@code MESSAGE_PROXY_AUTHENTICATION_REQUIRED} constant.
+     */
+    /**
+     * The {@code MESSAGE_NOT_ACCEPTABLE} constant.
+     */
+    /**
+     * The {@code MESSAGE_METHOD_NOT_ALLOWED} constant.
+     */
+    /**
+     * The {@code MESSAGE_NOT_FOUND} constant.
+     */
+    /**
+     * The {@code MESSAGE_FORBIDDEN} constant.
+     */
+    /**
+     * The {@code MESSAGE_PAYMENT_REQUIRED} constant.
+     */
+    /**
+     * The {@code MESSAGE_UNAUTHORIZED} constant.
+     */
+    /**
+     * The {@code MESSAGE_BAD_REQUEST} constant.
+     */
+    /**
+     * The {@code MESSAGE_TEMPORARY_REDIRECT} constant.
+     */
+    /**
+     * The {@code MESSAGE_USE_PROXY} constant.
+     */
+    /**
+     * The {@code MESSAGE_NOT_MODIFIED} constant.
+     */
+    /**
+     * The {@code MESSAGE_SEE_OTHER} constant.
+     */
+    /**
+     * The {@code MESSAGE_FOUND} constant.
+     */
+    /**
+     * The {@code MESSAGE_MOVED_PERMANENTLY} constant.
+     */
+    /**
+     * The {@code MESSAGE_PARTIAL_CONTENT} constant.
+     */
+    /**
+     * The {@code MESSAGE_RESET_CONTENT} constant.
+     */
+    /**
+     * The {@code MESSAGE_NO_CONTENT} constant.
+     */
+    /**
+     * The {@code MESSAGE_ACCEPTED} constant.
+     */
+    /**
+     * The {@code MESSAGE_CREATED} constant.
+     */
+    /**
+     * The {@code MESSAGE_OK} constant.
+     */
+    /**
+     * The {@code MESSAGE_SWITCHING_PROTOCOLS} constant.
+     */
+    /**
+     * The {@code MESSAGE_CONTINUE} constant.
+     */
     public static final String
         MESSAGE_CONTINUE = "Continue",
         MESSAGE_SWITCHING_PROTOCOLS = "Switching Protocols",
@@ -141,6 +402,13 @@ public enum StatusCode {;
         entry(HTTP_VERSION_NOT_SUPPORTED, MESSAGE_HTTP_VERSION_NOT_SUPPORTED),
         entry(NETWORK_AUTHENTICATION_REQUIRED, MESSAGE_NETWORK_AUTHENTICATION_REQUIRED)
     );
+    /**
+     * Returns the result of {@code getMessageForCode}.
+     *
+     * @param statusCode the status code
+     * @param statusMessage the status message
+     * @return the result
+     */
     public static String getMessageForCode(final int statusCode, final String statusMessage) {
         if (statusMessage != null) return statusMessage;
         return codeToMessage.getOrDefault(statusCode, "Not Implemented");

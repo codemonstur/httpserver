@@ -11,25 +11,51 @@ import static httpserver.core.Headers.HOST;
 import static httpserver.core.StatusCode.NOT_FOUND;
 import static java.util.Locale.ENGLISH;
 
+/**
+ * The {@code HostRouting} class.
+ */
 public class HostRouting {
 
     private HttpHandler fallback = exchange -> exchange.setStatusCode(NOT_FOUND);
     private Map<String, HttpHandler> hosts = new HashMap<>();
 
+    /**
+     * Returns the result of {@code hostRouting}.
+     *
+     * @return the result
+     */
     public static HostRouting hostRouting() {
         return new HostRouting();
     }
 
+    /**
+     * Returns the result of {@code host}.
+     *
+     * @param host the host
+     * @param handler the handler
+     * @return the result
+     */
     public HostRouting host(final String host, final HttpHandler handler) {
         this.hosts.put(host.toLowerCase(ENGLISH), handler);
         return this;
     }
+    /**
+     * Returns the result of {@code fallback}.
+     *
+     * @param fallback the fallback
+     * @return the result
+     */
     public HostRouting fallback(final HttpHandler fallback) {
         this.fallback = fallback;
         return this;
     }
 
 
+    /**
+     * Returns the result of {@code build}.
+     *
+     * @return the result
+     */
     public HttpHandler build() {
         return exchange -> {
             final var hostHeader = removePortSection(exchange.getRequestHeader(HOST));
@@ -58,4 +84,10 @@ public class HostRouting {
         return host.indexOf(':') == offset ? host.substring(0, offset) : host;
     }
 
+
+    /**
+     * Creates a new instance.
+     */
+    public HostRouting() {
+    }
 }

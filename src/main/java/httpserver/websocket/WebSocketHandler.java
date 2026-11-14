@@ -7,18 +7,34 @@ package httpserver.websocket;
  */
 public interface WebSocketHandler {
 
-    /** After the opening handshake has completed, before the first message is read. */
+    /** After the opening handshake has completed, before the first message is read. 
+     * @param webSocket the web socket
+     * @throws Exception if the operation fails
+     */
     default void onOpen(final WebSocket webSocket) throws Exception {}
 
-    /** A complete text message. */
+    /** A complete text message. 
+     * @param webSocket the web socket
+     * @param message the message
+     * @throws Exception if the operation fails
+     */
     default void onMessage(final WebSocket webSocket, final String message) throws Exception {}
 
-    /** A complete binary message. */
+    /** A complete binary message. 
+     * @param webSocket the web socket
+     * @param message the message
+     * @throws Exception if the operation fails
+     */
     default void onMessage(final WebSocket webSocket, final byte[] message) throws Exception {}
 
     /**
      * The connection has ended, with the status the peer closed with (1005 when it hung up
      * without sending one) and that status's reason. Called exactly once, whatever the ending.
+     
+     * @param webSocket the web socket
+     * @param code the code
+     * @param reason the reason
+     * @throws Exception if the operation fails
      */
     default void onClose(final WebSocket webSocket, final int code, final String reason) throws Exception {}
 

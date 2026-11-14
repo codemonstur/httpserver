@@ -11,8 +11,17 @@ import java.io.IOException;
 import static httpserver.core.Headers.CONTENT_ENCODING;
 import static httpserver.handlers.Compression.*;
 
+/**
+ * The {@code Brotli} enum.
+ */
 public enum Brotli {;
 
+    /**
+     * Returns the result of {@code compress}.
+     *
+     * @param next the next
+     * @return the result
+     */
     public static HttpHandler compress(final HttpHandler next) {
         return exchange -> {
             next.handleRequest(exchange);
@@ -30,6 +39,12 @@ public enum Brotli {;
         };
     }
 
+    /**
+     * Returns the result of {@code compressBrotli}.
+     *
+     * @param next the next
+     * @return the result
+     */
     public static HttpHandler compressBrotli(final HttpHandler next) {
         return exchange -> {
             next.handleRequest(exchange);
@@ -39,6 +54,12 @@ public enum Brotli {;
         };
     }
 
+    /**
+     * Performs the {@code compressBrotli} operation.
+     *
+     * @param exchange the exchange
+     * @throws IOException if the operation fails
+     */
     public static void compressBrotli(final HttpServerExchange exchange) throws IOException {
         Brotli4jLoader.ensureAvailability();
 

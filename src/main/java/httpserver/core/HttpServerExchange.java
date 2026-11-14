@@ -37,6 +37,9 @@ import static java.nio.charset.StandardCharsets.US_ASCII;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Locale.ENGLISH;
 
+/**
+ * The {@code HttpServerExchange} class.
+ */
 public class HttpServerExchange {
 
     private final byte[] rawRequest;
@@ -67,6 +70,16 @@ public class HttpServerExchange {
 
     private List<ExchangeCompleteListener> exchangeCompleteListeners;
 
+    /**
+     * Creates a new instance.
+     *
+     * @param socket the socket
+     * @param request the request
+     * @param length the length
+     * @param in the in
+     * @param out the out
+     * @throws IOException if the operation fails
+     */
     public HttpServerExchange(final Socket socket, final byte[] request, final int length, final InputStream in, final OutputStream out) throws IOException {
         this.socket = socket;
         this.rawRequest = request;
@@ -118,21 +131,52 @@ public class HttpServerExchange {
         }
     }
 
+    /**
+     * Returns the source ip address.
+     *
+     * @return the result
+     */
     public InetAddress getSourceIpAddress() {
         return socket.getInetAddress();
     }
+    /**
+     * Returns the raw request.
+     *
+     * @return the result
+     */
     public byte[] getRawRequest() {
         return rawRequest;
     }
+    /**
+     * Returns the request method.
+     *
+     * @return the result
+     */
     public String getRequestMethod() {
         return method;
     }
+    /**
+     * Returns the request uri.
+     *
+     * @return the result
+     */
     public String getRequestURI() {
         return uri;
     }
+    /**
+     * Returns the request protocol.
+     *
+     * @return the result
+     */
     public String getRequestProtocol() {
         return protocol;
     }
+    /**
+     * Returns the result of {@code getRequestHeader}.
+     *
+     * @param name the name
+     * @return the result
+     */
     public String getRequestHeader(final String name) {
         for (final String header : headers) {
             if (header.length() < name.length() + 2) continue;
@@ -150,6 +194,12 @@ public class HttpServerExchange {
         }
         return null;
     }
+    /**
+     * Returns the result of {@code getRequestHeaders}.
+     *
+     * @param name the name
+     * @return the result
+     */
     public List<String> getRequestHeaders(final String name) {
         final var values = new ArrayList<String>();
         for (final String header : headers) {
@@ -169,6 +219,11 @@ public class HttpServerExchange {
         return values;
     }
 
+    /**
+     * Returns the request path.
+     *
+     * @return the result
+     */
     public String getRequestPath() {
         if (path != null) return path;
 
@@ -176,11 +231,22 @@ public class HttpServerExchange {
         this.path = uri.substring(0, questionOffset != -1 ? questionOffset : uri.length());
         return path;
     }
+    /**
+     * Returns the query string.
+     *
+     * @return the result
+     */
     public String getQueryString() {
         final int questionOffset = uri.indexOf(QUESTION_MARK);
         return questionOffset == -1 ? null : uri.substring(questionOffset + 1);
     }
 
+    /**
+     * Returns the result of {@code getQueryParameter}.
+     *
+     * @param name the name
+     * @return the result
+     */
     public String getQueryParameter(final String name) {
         if (queryParameters != null) return queryParameters.get(name);
 
@@ -207,19 +273,45 @@ public class HttpServerExchange {
         return parsed.get(name);
     }
 
+    /**
+     * Returns the status code.
+     *
+     * @return the result
+     */
     public int getStatusCode() {
         return statusCode;
     }
+    /**
+     * Sets the status code.
+     *
+     * @param code the new value
+     */
     public void setStatusCode(final int code) {
         this.statusCode = code;
     }
+    /**
+     * Returns the status message.
+     *
+     * @return the result
+     */
     public String getStatusMessage() {
         return statusMessage;
     }
+    /**
+     * Sets the status message.
+     *
+     * @param statusMessage the new value
+     */
     public void setStatusMessage(final String statusMessage) {
         this.statusMessage = statusMessage;
     }
 
+    /**
+     * Returns the result of {@code getResponseHeader}.
+     *
+     * @param name the name
+     * @return the result
+     */
     public String getResponseHeader(final String name) {
         final var key = responseHeaderKey(name);
         if (key == null) return null;
@@ -228,6 +320,9 @@ public class HttpServerExchange {
     }
     /**
      * Replaces the header entirely, whatever casing the previous value was stored under.
+     
+     * @param name the new value
+     * @param value the new value
      */
     public void setResponseHeader(final String name, final String value) {
         removeResponseHeader(name);
@@ -236,6 +331,9 @@ public class HttpServerExchange {
     /**
      * Appends a value, which is what headers such as Set-Cookie need: a response may carry
      * several of them and none may be dropped.
+     
+     * @param name the name
+     * @param value the value
      */
     public void addResponseHeader(final String name, final String value) {
         if (value == null) {
@@ -247,6 +345,11 @@ public class HttpServerExchange {
         responseHeaders.computeIfAbsent(storeKey, k -> new ArrayList<>()).add(value);
         if (key == null) responseHeaderKeys.put(name.toLowerCase(ENGLISH), name);
     }
+    /**
+     * Performs the {@code removeResponseHeader} operation.
+     *
+     * @param name the name
+     */
     public void removeResponseHeader(final String name) {
         final var key = responseHeaderKey(name);
         if (key != null) {
@@ -258,19 +361,46 @@ public class HttpServerExchange {
         return responseHeaderKeys.get(name.toLowerCase(ENGLISH));
     }
 
+    /**
+     * Performs the {@code setNoContentLength} operation.
+     */
     public void setNoContentLength() {
         this.noContentLength = true;
     }
 
+    /**
+     * Performs the {@code send} operation.
+     *
+     * @param data the data
+     * @param charset the charset
+     */
     public void send(final String data, final Charset charset) {
         send(data.getBytes(charset));
     }
+    /**
+     * Performs the {@code send} operation.
+     *
+     * @param data the data
+     */
     public void send(final byte[] data) {
         this.responseBody = newByteArrayBody(data);
     }
+    /**
+     * Performs the {@code send} operation.
+     *
+     * @param data the data
+     * @param offset the offset
+     * @param length the length
+     */
     public void send(final byte[] data, final int offset, final int length) {
         this.responseBody = newByteArrayBody(data, offset, length);
     }
+    /**
+     * Performs the {@code send} operation.
+     *
+     * @param in the in
+     * @param length the length
+     */
     public void send(final InputStream in, final long length) {
         this.responseBody = newInputStreamBody(in, length);
     }
@@ -279,6 +409,8 @@ public class HttpServerExchange {
      * earlier setNoContentLength(): the body is framed, not left to the connection. Clients
      * that predate HTTP/1.1 cannot read chunked, so for them the connection is marked to close
      * and the body is delimited by that close instead.
+     
+     * @param in the in
      */
     public void sendChunked(final InputStream in) {
         this.responseBody = newInputStreamBody(in);
@@ -290,6 +422,8 @@ public class HttpServerExchange {
     /**
      * Answers an Expect: 100-continue. Idempotent, because both a handler and the server drain
      * of the remaining body may want to call it for the same exchange.
+     
+     * @throws IOException if the operation fails
      */
     public void requestBodyAccepted() throws IOException {
         if (continueSent) return;
@@ -303,6 +437,11 @@ public class HttpServerExchange {
         }
     }
 
+    /**
+     * Returns the input stream.
+     *
+     * @return the result
+     */
     public InputStream getInputStream() {
         if (requestBody != null) return requestBody;
 
@@ -331,6 +470,11 @@ public class HttpServerExchange {
             return new ByteArrayInputStream(new byte[0]);
         }
     }
+    /**
+     * Returns the output stream.
+     *
+     * @return the result
+     */
     public OutputStream getOutputStream() {
         return out;
     }
@@ -339,6 +483,8 @@ public class HttpServerExchange {
      * Blocks until the client closes its side of the connection. Used by long lived handlers,
      * such as server sent events, that take the connection over and must hold on to their
      * worker until the stream really ends.
+     
+     * @throws IOException if the operation fails
      */
     public void awaitClientDisconnect() throws IOException {
         try {
@@ -348,6 +494,11 @@ public class HttpServerExchange {
             connectionClosed = true;
         }
     }
+    /**
+     * Returns whether the connection closed condition holds.
+     *
+     * @return whether the condition holds
+     */
     public boolean isConnectionClosed() {
         return connectionClosed;
     }
@@ -356,6 +507,8 @@ public class HttpServerExchange {
      * True when the client asked to switch this connection to the websocket protocol. The
      * version and the key are checked by acceptWebSocket, which rejects an attempt that gets
      * them wrong; callers use this to choose between a websocket and their fallback.
+     
+     * @return whether the condition holds
      */
     public boolean isWebSocketUpgrade() {
         return containsToken(UPGRADE, "websocket") && containsToken(CONNECTION, "Upgrade");
@@ -373,6 +526,10 @@ public class HttpServerExchange {
      * closes. Returns the (by then closed) session, or null when the handshake was rejected,
      * in which case the response says why: 426 for an unsupported version, 400 for a
      * malformed attempt.
+     
+     * @param handler the handler
+     * @return the result
+     * @throws IOException if the operation fails
      */
     public WebSocket acceptWebSocket(final WebSocketHandler handler) throws IOException {
         if (!isWebSocketUpgrade()) {
@@ -423,6 +580,9 @@ public class HttpServerExchange {
         }
     }
 
+    /**
+     * The {@code DATE_FORMAT} constant.
+     */
     public static final DateTimeFormatter
         DATE_FORMAT = DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z", ENGLISH)
             .withZone(ZoneId.of("GMT"));
@@ -432,7 +592,9 @@ public class HttpServerExchange {
     private static volatile long cachedDateSecond = Long.MIN_VALUE;
     private static volatile String cachedDateValue;
 
-    /** The Date header value for the current second, cached to avoid reformatting per response. */
+    /** The Date header value for the current second, cached to avoid reformatting per response. 
+     * @return the result
+     */
     public static String currentDateHeader() {
         final long now = System.currentTimeMillis() / 1000L;
         if (now != cachedDateSecond) {
@@ -442,6 +604,11 @@ public class HttpServerExchange {
         return cachedDateValue;
     }
 
+    /**
+     * Performs the {@code sendResponse} operation.
+     *
+     * @throws IOException if the operation fails
+     */
     public void sendResponse() throws IOException {
         if (responseSent) return;
 
@@ -481,16 +648,28 @@ public class HttpServerExchange {
         responseSent = true;
     }
 
+    /**
+     * Returns whether the response sent condition holds.
+     *
+     * @return whether the condition holds
+     */
     public boolean isResponseSent() {
         return responseSent;
     }
 
+    /**
+     * Returns the response body.
+     *
+     * @return the result
+     */
     public ResponseBody getResponseBody() {
         return responseBody;
     }
     /**
      * False for HEAD (the headers describe the representation the equivalent GET would return)
      * and for the status codes that must never carry a body.
+     
+     * @return whether the condition holds
      */
     public boolean methodAllowsResponseBody() {
         if (HEAD.equals(method)) return false;
@@ -545,11 +724,21 @@ public class HttpServerExchange {
         return -1;
     }
 
+    /**
+     * Performs the {@code addExchangeCompleteListener} operation.
+     *
+     * @param listener the listener
+     */
     public void addExchangeCompleteListener(final ExchangeCompleteListener listener) {
         if (exchangeCompleteListeners == null) exchangeCompleteListeners = new ArrayList<>();
         exchangeCompleteListeners.add(listener);
     }
 
+    /**
+     * Performs the {@code notifyCompleteListeners} operation.
+     *
+     * @param exception the exception
+     */
     public void notifyCompleteListeners(final Exception exception) {
         if (exchangeCompleteListeners != null) {
             for (final var listener : exchangeCompleteListeners) {

@@ -45,6 +45,13 @@ public final class WebSocket {
     private volatile boolean open = true;
     private boolean closeSent = false;
 
+    /**
+     * Creates a new instance.
+     *
+     * @param in the in
+     * @param out the out
+     * @param handler the handler
+     */
     public WebSocket(final InputStream in, final OutputStream out, final WebSocketHandler handler) {
         this.in = in;
         this.out = out;
@@ -54,6 +61,9 @@ public final class WebSocket {
     /**
      * The opening handshake's answer key: base64 of the SHA-1 of the client's nonce and the
      * protocol's magic GUID (RFC 6455 section 4.2.2).
+     
+     * @param key the key
+     * @return the result
      */
     public static String acceptKey(final String key) {
         try {
@@ -64,27 +74,43 @@ public final class WebSocket {
         }
     }
 
-    /** Sends a text message. */
+    /** Sends a text message. 
+     * @param text the text
+     * @throws IOException if the operation fails
+     */
     public void send(final String text) throws IOException {
         sendFrame(true, Frames.OP_TEXT, text.getBytes(UTF_8));
     }
 
-    /** Sends a binary message. */
+    /** Sends a binary message. 
+     * @param binary the binary
+     * @throws IOException if the operation fails
+     */
     public void send(final byte[] binary) throws IOException {
         sendFrame(true, Frames.OP_BINARY, binary);
     }
 
-    /** Sends an empty ping, the protocol's own keepalive. */
+    /** Sends an empty ping, the protocol's own keepalive. 
+     * @throws IOException if the operation fails
+     */
     public void sendPing() throws IOException {
         sendPing(EMPTY);
     }
 
+    /**
+     * Performs the {@code sendPing} operation.
+     *
+     * @param payload the payload
+     * @throws IOException if the operation fails
+     */
     public void sendPing(final byte[] payload) throws IOException {
         if (payload.length > 125) throw new IllegalArgumentException("Control frames are limited to 125 bytes");
         sendFrame(true, Frames.OP_PING, payload);
     }
 
-    /** Ends the session with the normal status: close frame out, read loop stopped. */
+    /** Ends the session with the normal status: close frame out, read loop stopped. 
+     * @throws IOException if the operation fails
+     */
     public void close() throws IOException {
         close(CLOSE_NORMAL, "");
     }
@@ -94,6 +120,10 @@ public final class WebSocket {
      * loop stops as soon as the callback returns; called from another thread the session
      * ends once the client answers the close. Never sends a second close: a peer that got
      * here first already started the closing handshake.
+     
+     * @param code the code
+     * @param reason the reason
+     * @throws IOException if the operation fails
      */
     public void close(final int code, final String reason) throws IOException {
         synchronized (writeLock) {
@@ -103,6 +133,11 @@ public final class WebSocket {
         }
     }
 
+    /**
+     * Returns whether the open condition holds.
+     *
+     * @return whether the condition holds
+     */
     public boolean isOpen() {
         return open;
     }
@@ -111,6 +146,8 @@ public final class WebSocket {
      * Runs the receiving side until the connection ends: messages go to the handler one at a
      * time, pings are answered, and the closing handshake is completed in both directions.
      * Called by acceptWebSocket; blocks until the session is over.
+     
+     * @throws IOException if the operation fails
      */
     public void run() throws IOException {
         int closeCode = CLOSE_NO_STATUS;

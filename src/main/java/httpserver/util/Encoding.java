@@ -15,13 +15,29 @@ import static httpserver.util.Strings.EMPTY;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.text.CharacterIterator.DONE;
 
+/**
+ * The {@code Encoding} enum.
+ */
 public enum Encoding {;
 
     private static final char[] HEX_DIGITS = "0123456789abcdef".toCharArray();
 
+    /**
+     * Returns the result of {@code sha256}.
+     *
+     * @param data the data
+     * @param charset the charset
+     * @return the result
+     */
     public static byte[] sha256(final String data, final Charset charset) {
         return sha256(data.getBytes(charset));
     }
+    /**
+     * Returns the result of {@code sha256}.
+     *
+     * @param data the data
+     * @return the result
+     */
     public static byte[] sha256(final byte[] data) {
         try {
             return MessageDigest.getInstance("SHA-256").digest(data);
@@ -31,6 +47,11 @@ public enum Encoding {;
         }
     }
 
+    /**
+     * Returns the result of {@code newSha256}.
+     *
+     * @return the result
+     */
     public static MessageDigest newSha256() {
         try {
             return MessageDigest.getInstance("SHA-256");
@@ -42,6 +63,13 @@ public enum Encoding {;
     // For HMAC see RFC 2104.
     // SHA-256 uses a block length of 64. The Java MessageDigest class has no way to get the block length from an
     // instance. So it is not possible to write a generic HMAC implementation at this time.
+    /**
+     * Returns the result of {@code hmacSha256}.
+     *
+     * @param data the data
+     * @param key the key
+     * @return the result
+     */
     public static byte[] hmacSha256(final byte[] data, final byte[] key) {
         final var digest = newSha256();
         final var blockLength = 64;
@@ -64,17 +92,34 @@ public enum Encoding {;
         return digest.digest(inner);
     }
 
+    /**
+     * Returns the result of {@code encodeHex}.
+     *
+     * @param bytes the bytes
+     * @return the result
+     */
     public static String encodeHex(final byte[] bytes) {
         return HexFormat.of().formatHex(bytes);
     }
 
+    /**
+     * Returns the result of {@code encodeUrl}.
+     *
+     * @param value the value
+     * @return the result
+     */
     public static String encodeUrl(final String value) {
         return value != null ? URLEncoder.encode(value, UTF_8) : EMPTY;
     }
     /**
+     * Returns the result of {@code decodeUrl}.
+     *
      * @throws httpserver.error.MalformedInput when the value contains a broken percent escape.
      *         Throwing an HttpError means an invalid query string or form body is answered with
      *         a 400 rather than bubbling up as a 500 Internal Server Error.
+     
+     * @param value the value
+     * @return the result
      */
     public static String decodeUrl(final String value) {
         if (value == null) return EMPTY;
@@ -85,13 +130,31 @@ public enum Encoding {;
         }
     }
 
+    /**
+     * Returns the result of {@code encodeBase64Url}.
+     *
+     * @param value the value
+     * @return the result
+     */
     public static String encodeBase64Url(final byte[] value) {
         return Base64.getUrlEncoder().encodeToString(value);
     }
+    /**
+     * Returns the result of {@code decodeBase64Url}.
+     *
+     * @param text the text
+     * @return the result
+     */
     public static byte[] decodeBase64Url(final String text) {
         return Base64.getUrlDecoder().decode(text);
     }
 
+    /**
+     * Returns the result of {@code escapeJson}.
+     *
+     * @param input the input
+     * @return the result
+     */
     public static String escapeJson(final String input) {
         if (input == null) return "";
 

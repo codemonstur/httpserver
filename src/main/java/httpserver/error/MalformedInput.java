@@ -15,13 +15,29 @@ import static httpserver.error.HttpError.respondError;
  */
 public final class MalformedInput extends IllegalArgumentException implements HttpError {
 
+    /**
+     * Creates a new instance.
+     *
+     * @param message the message
+     */
     public MalformedInput(final String message) {
         super(message);
     }
+    /**
+     * Creates a new instance.
+     *
+     * @param message the message
+     * @param cause the cause
+     */
     public MalformedInput(final String message, final Throwable cause) {
         super(message, cause);
     }
 
+    /**
+     * Performs the {@code processExchange} operation.
+     *
+     * @param exchange the exchange
+     */
     @Override
     public void processExchange(final HttpServerExchange exchange) {
         respondError(exchange, BAD_REQUEST, BAD_REQUEST, getMessage());

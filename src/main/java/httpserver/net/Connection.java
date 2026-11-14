@@ -4,11 +4,22 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.concurrent.Executor;
 
+/**
+ * The {@code Connection} class.
+ */
 public final class Connection {
     // Written by the accept/stop threads and read by the worker, so it has to be volatile.
     private volatile boolean running = true;
     private final Socket socket;
 
+    /**
+     * Creates a new instance.
+     *
+     * @param executor the executor
+     * @param socket the socket
+     * @param handler the handler
+     * @throws IOException if the operation fails
+     */
     public Connection(final Executor executor, final Socket socket, final ConnectionHandler handler)
             throws IOException {
         this.socket = socket;
@@ -41,6 +52,9 @@ public final class Connection {
         }
     }
 
+    /**
+     * Performs the {@code stop} operation.
+     */
     public void stop() {
         this.running = false;
         // Closing the socket is what actually unblocks a worker sitting in a keep-alive read;
@@ -50,6 +64,11 @@ public final class Connection {
         } catch (final IOException ignored) {}
     }
 
+    /**
+     * Returns whether the alive condition holds.
+     *
+     * @return whether the condition holds
+     */
     public boolean isAlive() {
         return running;
     }

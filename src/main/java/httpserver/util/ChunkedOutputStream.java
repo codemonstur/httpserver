@@ -19,15 +19,34 @@ public final class ChunkedOutputStream extends OutputStream {
     private final OutputStream out;
     private boolean finished = false;
 
+    /**
+     * Creates a new instance.
+     *
+     * @param out the out
+     */
     public ChunkedOutputStream(final OutputStream out) {
         this.out = out;
     }
 
+    /**
+     * Performs the {@code write} operation.
+     *
+     * @param b the b
+     * @throws IOException if the operation fails
+     */
     @Override
     public void write(final int b) throws IOException {
         write(new byte[] { (byte) b }, 0, 1);
     }
 
+    /**
+     * Performs the {@code write} operation.
+     *
+     * @param bytes the bytes
+     * @param offset the offset
+     * @param length the length
+     * @throws IOException if the operation fails
+     */
     @Override
     public void write(final byte[] bytes, final int offset, final int length) throws IOException {
         if (length == 0) return;
@@ -37,11 +56,21 @@ public final class ChunkedOutputStream extends OutputStream {
         out.write(CRLF);
     }
 
+    /**
+     * Performs the {@code flush} operation.
+     *
+     * @throws IOException if the operation fails
+     */
     @Override
     public void flush() throws IOException {
         out.flush();
     }
 
+    /**
+     * Closes this resource.
+     *
+     * @throws IOException if the operation fails
+     */
     @Override
     public void close() throws IOException {
         if (finished) return;

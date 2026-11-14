@@ -14,8 +14,21 @@ import static httpserver.util.Strings.AMPERSAND;
 import static httpserver.util.Strings.EMPTY;
 import static java.nio.charset.StandardCharsets.US_ASCII;
 
+/**
+ * The {@code FormParsing} enum.
+ */
 public enum FormParsing {;
 
+    /**
+     * Returns the result of {@code parseUrlEncodedForm}.
+     *
+     * @param exchange the exchange
+     * @param charset the charset
+     * @param validParameters the valid parameters
+     * @return the result
+     * @throws IOException if the operation fails
+     * @throws InvalidInput if the operation fails
+     */
     public static Map<String, String> parseUrlEncodedForm(final HttpServerExchange exchange, final Charset charset,
                                                           final Set<String> validParameters) throws IOException, InvalidInput {
         final var form = parseUrlEncodedForm(exchange, charset);
@@ -29,6 +42,14 @@ public enum FormParsing {;
         return form;
     }
 
+    /**
+     * Returns the result of {@code parseUrlEncodedForm}.
+     *
+     * @param exchange the exchange
+     * @param charset the charset
+     * @return the result
+     * @throws IOException if the operation fails
+     */
     public static Map<String, String> parseUrlEncodedForm(final HttpServerExchange exchange, final Charset charset) throws IOException {
         final String type = exchange.getRequestHeader(CONTENT_TYPE);
         if (!isUrlEncodedForm(type))
@@ -48,6 +69,15 @@ public enum FormParsing {;
         return map;
     }
 
+    /**
+     * Returns the result of {@code parseMultipartForm}.
+     *
+     * @param contentType the content type
+     * @param contentLength the content length
+     * @param is the is
+     * @return the result
+     * @throws IOException if the operation fails
+     */
     public static List<FormPart> parseMultipartForm(final String contentType, final int contentLength, final InputStream is) throws IOException {
         if (contentType == null || !contentType.toLowerCase(java.util.Locale.ENGLISH).startsWith("multipart/form-data"))
             throw new IOException("Not multipart form data");
@@ -116,6 +146,15 @@ public enum FormParsing {;
         return null;
     }
 
+    /**
+     * Returns the result of {@code indexOf}.
+     *
+     * @param array the array
+     * @param target the target
+     * @param start the start
+     * @param end the end
+     * @return the result
+     */
     public static int indexOf(final byte[] array, final byte[] target, final int start, final int end) {
         if (target.length == 0) return 0;
 
