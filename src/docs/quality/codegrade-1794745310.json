@@ -1,0 +1,1928 @@
+{
+  "target": "/home/jurgen/projects/libraries/httpserver",
+  "files": 83,
+  "unixTimestamp": 1794745315,
+  "iso8601": "2026-11-15T12:21:55.256876062Z",
+  "generatedAt": "Sunday, November 15, 2026 12:21:55 UTC",
+  "durationMillis": 1073,
+  "duration": "1.073 s",
+  "score": 94.3,
+  "checks": [
+    {
+      "id": "long-file",
+      "description": "Files should stay under 150 lines, counting Javadoc as one",
+      "filesChecked": 83,
+      "filesFailing": 16,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/HttpServerBuilder.java",
+          "line": 331
+        },
+        {
+          "path": "src/main/java/httpserver/core/HttpServerExchange.java",
+          "line": 751
+        },
+        {
+          "path": "src/main/java/httpserver/core/InputParser.java",
+          "line": 485
+        },
+        {
+          "path": "src/main/java/httpserver/core/StatusCode.java",
+          "line": 418
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/Common.java",
+          "line": 281
+        },
+        {
+          "path": "src/main/java/httpserver/net/ConnectionListener.java",
+          "line": 291
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/WebSocket.java",
+          "line": 295
+        },
+        {
+          "path": "src/test/java/benchmarks/Bench.java",
+          "line": 176
+        },
+        {
+          "path": "src/test/java/benchmarks/LoadGenerator.java",
+          "line": 168
+        },
+        {
+          "path": "src/test/java/integration/RoundTripTest.java",
+          "line": 392
+        },
+        {
+          "path": "src/test/java/unittests/FramesTest.java",
+          "line": 151
+        },
+        {
+          "path": "src/test/java/unittests/HttpServerExchangeTest.java",
+          "line": 485
+        },
+        {
+          "path": "src/test/java/unittests/InputParserTest.java",
+          "line": 204
+        },
+        {
+          "path": "src/test/java/unittests/LengthRestrictedInputStreamTest.java",
+          "line": 165
+        },
+        {
+          "path": "src/test/java/unittests/ResponseBuilderTest.java",
+          "line": 151
+        },
+        {
+          "path": "src/test/java/unittests/WebSocketTest.java",
+          "line": 303
+        }
+      ]
+    },
+    {
+      "id": "long-line",
+      "description": "Lines should stay under 120 characters",
+      "filesChecked": 83,
+      "filesFailing": 13,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/CacheControlStrategy.java",
+          "line": 19
+        },
+        {
+          "path": "src/main/java/httpserver/core/FormParsing.java",
+          "line": 33
+        },
+        {
+          "path": "src/main/java/httpserver/core/HttpServerExchange.java",
+          "line": 83
+        },
+        {
+          "path": "src/main/java/httpserver/core/InputParser.java",
+          "line": 31
+        },
+        {
+          "path": "src/main/java/httpserver/core/ResponseBody.java",
+          "line": 110
+        },
+        {
+          "path": "src/main/java/httpserver/error/HttpError.java",
+          "line": 51
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/Common.java",
+          "line": 73
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/Frames.java",
+          "line": 85
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/WebSocket.java",
+          "line": 188
+        },
+        {
+          "path": "src/test/java/benchmarks/Bench.java",
+          "line": 93
+        },
+        {
+          "path": "src/test/java/integration/RoundTripTest.java",
+          "line": 152
+        },
+        {
+          "path": "src/test/java/unittests/FramesTest.java",
+          "line": 90
+        },
+        {
+          "path": "src/test/java/unittests/WebSocketTest.java",
+          "line": 232
+        }
+      ]
+    },
+    {
+      "id": "blank-lines",
+      "description": "Avoid multiple consecutive blank lines",
+      "filesChecked": 83,
+      "filesFailing": 5,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/HttpServerBuilder.java",
+          "line": 323
+        },
+        {
+          "path": "src/main/java/httpserver/core/InputParser.java",
+          "line": 245
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/HostRouting.java",
+          "line": 52
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/MethodPathRouting.java",
+          "line": 125
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/SessionMethodPathRouting.java",
+          "line": 119
+        }
+      ]
+    },
+    {
+      "id": "trailing-whitespace",
+      "description": "Lines should not have trailing whitespace",
+      "filesChecked": 83,
+      "filesFailing": 11,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/HttpServerBuilder.java",
+          "line": 106
+        },
+        {
+          "path": "src/main/java/httpserver/core/HttpServerExchange.java",
+          "line": 323
+        },
+        {
+          "path": "src/main/java/httpserver/core/ResponseBody.java",
+          "line": 74
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/Common.java",
+          "line": 126
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/Compression.java",
+          "line": 143
+        },
+        {
+          "path": "src/main/java/httpserver/session/RandomIdStore.java",
+          "line": 33
+        },
+        {
+          "path": "src/main/java/httpserver/util/Encoding.java",
+          "line": 120
+        },
+        {
+          "path": "src/main/java/httpserver/util/LengthRestrictedInputStream.java",
+          "line": 105
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/Frames.java",
+          "line": 74
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/WebSocket.java",
+          "line": 64
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/WebSocketHandler.java",
+          "line": 10
+        }
+      ]
+    },
+    {
+      "id": "tab-indent",
+      "description": "Indent with spaces, not tabs",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "newline-eof",
+      "description": "Files should end with a newline",
+      "filesChecked": 83,
+      "filesFailing": 5,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/CacheControlStrategy.java",
+          "line": 49
+        },
+        {
+          "path": "src/main/java/httpserver/core/ContentType.java",
+          "line": 74
+        },
+        {
+          "path": "src/main/java/httpserver/error/HttpError.java",
+          "line": 63
+        },
+        {
+          "path": "src/main/java/httpserver/error/InvalidInput.java",
+          "line": 65
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/SessionHttpHandler.java",
+          "line": 19
+        }
+      ]
+    },
+    {
+      "id": "empty-file",
+      "description": "Files should not be empty",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "star-imports",
+      "description": "Avoid wildcard (star) imports",
+      "filesChecked": 83,
+      "filesFailing": 18,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/CacheControlStrategy.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/FormParsing.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/HttpServerBuilder.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/HttpServerExchange.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/Brotli.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/Common.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/ServerSentEvents.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/session/TokenSessionStore.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/architecture/TestArchitecture.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/EncodingTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/FormParseTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/FramesTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/FunctionsTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/HttpServerExchangeTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/InputParserTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/LengthRestrictedInputStreamTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/TokenSessionStoreTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/WebSocketTest.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "unused-imports",
+      "description": "Remove unused imports",
+      "filesChecked": 83,
+      "filesFailing": 4,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/HttpServerBuilder.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/InputParser.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/HostRouting.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/util/Functions.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "class-name-case",
+      "description": "Class names should be PascalCase",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "method-name-case",
+      "description": "Method/field names should be camelCase",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "exception-name",
+      "description": "Exceptions should not end in Exception",
+      "filesChecked": 83,
+      "filesFailing": 1,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/websocket/WebSocketException.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "oop-name",
+      "description": "Avoid OOP-role suffixes in class names",
+      "filesChecked": 83,
+      "filesFailing": 6,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/HttpHandler.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/HttpServerBuilder.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/ResponseBuilder.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/SessionHttpHandler.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/net/ConnectionHandler.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/WebSocketHandler.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "long-names",
+      "description": "Avoid overly long class/method names",
+      "filesChecked": 83,
+      "filesFailing": 11,
+      "violations": [
+        {
+          "path": "src/test/java/integration/RoundTripTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/CompressionTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/EncodingTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/FramesTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/HttpServerExchangeTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/LengthRestrictedInputStreamTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/RequestParsingTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/SessionStoreTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/TokenSessionStoreTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/UrlEncodedFormParseTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/WebSocketTest.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "single-letter-var",
+      "description": "Avoid single-letter variable names",
+      "filesChecked": 83,
+      "filesFailing": 10,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/FormParsing.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/HttpServerBuilder.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/HttpServerExchange.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/RequestParsing.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/MethodPathRouting.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/SessionMethodPathRouting.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/util/ChunkedOutputStream.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/util/Encoding.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/util/LengthRestrictedInputStream.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/benchmarks/LoadGenerator.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "constant-naming",
+      "description": "static final fields should be UPPER_SNAKE_CASE",
+      "filesChecked": 83,
+      "filesFailing": 3,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/ContentType.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/StatusCode.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/integration/RoundTripTest.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "boolean-method-name",
+      "description": "Boolean methods should start with is/has/can/should",
+      "filesChecked": 83,
+      "filesFailing": 9,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/FormParsing.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/HttpServerExchange.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/InputParser.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/Common.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/Compression.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/session/RandomIdStore.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/session/SessionStore.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/session/TokenSessionStore.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/util/LengthRestrictedInputStream.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "default-package",
+      "description": "Classes should declare a package",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "reverse-dns-package",
+      "description": "Avoid reverse-DNS style package names",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "long-method",
+      "description": "Methods should stay under 50 lines",
+      "filesChecked": 83,
+      "filesFailing": 3,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/HttpServerBuilder.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/net/ConnectionListener.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/WebSocket.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "too-many-parameters",
+      "description": "Methods should take at most 5 parameters",
+      "filesChecked": 83,
+      "filesFailing": 1,
+      "violations": [
+        {
+          "path": "src/test/java/benchmarks/Bench.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "deep-nesting",
+      "description": "Avoid deeply nested blocks (max 4)",
+      "filesChecked": 83,
+      "filesFailing": 2,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/net/ConnectionListener.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/WebSocket.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "high-complexity",
+      "description": "Methods should stay under cyclomatic complexity 10",
+      "filesChecked": 83,
+      "filesFailing": 6,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/HttpServerBuilder.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/HttpServerExchange.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/net/ConnectionListener.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/util/Encoding.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/Frames.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/WebSocket.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "many-returns",
+      "description": "Avoid methods with too many returns",
+      "filesChecked": 83,
+      "filesFailing": 1,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/HttpServerExchange.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "else-if-chain",
+      "description": "Avoid long else-if chains",
+      "filesChecked": 83,
+      "filesFailing": 1,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/websocket/WebSocket.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "enhanced-for",
+      "description": "Use enhanced for-loops over index loops",
+      "filesChecked": 83,
+      "filesFailing": 1,
+      "violations": [
+        {
+          "path": "src/test/java/benchmarks/Bench.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "inner-class-depth",
+      "description": "Avoid deeply nested classes",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "large-class",
+      "description": "Classes should stay under 40 methods+fields",
+      "filesChecked": 83,
+      "filesFailing": 1,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/HttpServerExchange.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "too-many-public-methods",
+      "description": "Classes should have at most 10 public methods",
+      "filesChecked": 83,
+      "filesFailing": 8,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/HttpServerExchange.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/ResponseBuilder.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/integration/RoundTripTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/FramesTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/HttpServerExchangeTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/InputParserTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/ResponseBuilderTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/WebSocketTest.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "public-mutable-field",
+      "description": "Avoid public non-final fields",
+      "filesChecked": 83,
+      "filesFailing": 3,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/util/Value.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/Frames.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/WebSocketException.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "mutable-static",
+      "description": "Avoid non-final static fields",
+      "filesChecked": 83,
+      "filesFailing": 2,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/HttpServerExchange.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/integration/RoundTripTest.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "missing-equals-hashcode",
+      "description": "Override equals and hashCode together",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "getters-setters",
+      "description": "Avoid getters and setters (expose behavior, not state)",
+      "filesChecked": 83,
+      "filesFailing": 6,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/HttpServer.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/FormPart.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/HttpServerExchange.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/ResponseBody.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/net/ConnectionListener.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/session/TokenSessionStore.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "boolean-parameter",
+      "description": "Avoid boolean parameters",
+      "filesChecked": 83,
+      "filesFailing": 8,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/HttpServerBuilder.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/InputParser.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/Common.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/util/Functions.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/Frames.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/WebSocket.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/benchmarks/Bench.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/ClientFrames.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "string-equality",
+      "description": "Compare Strings with .equals, not \u003d\u003d",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "space-indent",
+      "description": "Indent with an even number of spaces",
+      "filesChecked": 83,
+      "filesFailing": 7,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/HttpServerBuilder.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/Compression.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/ServerSentEvents.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/net/ConnectionListener.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/session/SessionStore.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/Frames.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/integration/RoundTripTest.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "license-header",
+      "description": "Avoid license boilerplate at the top of files",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "final-parameters",
+      "description": "Method parameters should be declared final",
+      "filesChecked": 83,
+      "filesFailing": 9,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/HttpHandler.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/ExchangeCompleteListener.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/FormParsing.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/ResponseBody.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/error/HttpError.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/SessionHttpHandler.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/net/ConnectionHandler.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/session/RandomIdStore.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/session/TokenSessionStore.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "magic-number",
+      "description": "Avoid magic numbers",
+      "filesChecked": 83,
+      "filesFailing": 14,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/FormParsing.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/HttpServerBuilder.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/HttpServerExchange.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/RequestParsing.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/ResponseBody.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/ResponseBuilder.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/Compression.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/ServerSentEvents.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/net/ConnectionListener.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/session/RandomIdStore.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/util/Encoding.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/util/LengthRestrictedInputStream.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/Frames.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/WebSocket.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "deprecated-api",
+      "description": "Avoid deprecated constructors/APIs",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "suppress-warnings",
+      "description": "Avoid @SuppressWarnings",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "missing-javadoc",
+      "description": "Public classes/methods should have Javadoc",
+      "filesChecked": 83,
+      "filesFailing": 35,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/ContentType.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/ResponseBody.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/ServerSentEvents.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/architecture/TestArchitecture.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/benchmarks/Bench.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/benchmarks/BenchServer.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/benchmarks/HttpServerBench.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/benchmarks/LoadGenerator.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/benchmarks/UndertowBench.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/integration/RoundTripTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/tools/CompressionBrotli.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/tools/SimpleServer.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/CacheControlStrategyTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/ChunkedOutputStreamTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/CompressionTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/ContentTypeTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/EncodingTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/Exchanges.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/FormParseTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/FramesTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/FunctionsTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/HeadersTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/HostRoutingTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/HttpServerExchangeTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/InputParserTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/LengthRestrictedInputStreamTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/MethodPathRoutingTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/RequestParsingTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/ResponseBodyTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/ResponseBuilderTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/SessionStoreTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/StatusCodeTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/TokenSessionStoreTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/UrlEncodedFormParseTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/WebSocketTest.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "author-tag",
+      "description": "Avoid @author tags",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "private-field-javadoc",
+      "description": "Avoid Javadoc on private fields",
+      "filesChecked": 83,
+      "filesFailing": 4,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/error/Forbidden.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/error/InvalidInput.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/error/NotImplemented.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/error/Redirect.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "empty-catch",
+      "description": "Avoid empty catch blocks",
+      "filesChecked": 83,
+      "filesFailing": 5,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/HttpServerBuilder.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/HttpServerExchange.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/net/Connection.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/net/ConnectionListener.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/WebSocket.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "empty-finally",
+      "description": "Avoid empty finally blocks",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "empty-method",
+      "description": "Avoid empty method bodies",
+      "filesChecked": 83,
+      "filesFailing": 3,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/ResponseBody.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/util/LengthRestrictedInputStream.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/WebSocketHandler.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "catch-general",
+      "description": "Avoid catching broad Exception/Throwable",
+      "filesChecked": 83,
+      "filesFailing": 10,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/HttpServerBuilder.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/InputParser.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/Common.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/net/Connection.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/net/ConnectionListener.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/session/RandomIdStore.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/session/TokenSessionStore.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/WebSocket.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/benchmarks/LoadGenerator.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/integration/RoundTripTest.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "return-null",
+      "description": "Avoid returning null",
+      "filesChecked": 83,
+      "filesFailing": 5,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/FormParsing.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/HttpServerExchange.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/HostRouting.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/websocket/Frames.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/WebSocketTest.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "switch-fallthrough",
+      "description": "Avoid switch case fall-through",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "switch-default",
+      "description": "Switch statements should have a default",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "optional-get",
+      "description": "Avoid Optional.get() without isPresent()",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "raw-types",
+      "description": "Avoid raw generic types",
+      "filesChecked": 83,
+      "filesFailing": 11,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/FormParsing.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/FormPart.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/HttpServerExchange.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/core/ResponseBuilder.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/HostRouting.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/MethodPathRouting.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/ServerSentEvents.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/SessionMethodPathRouting.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/net/ConnectionListener.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/benchmarks/Bench.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/HttpServerExchangeTest.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "print-stack-trace",
+      "description": "Avoid printStackTrace()",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "system-out",
+      "description": "Avoid System.out/err (use a logger)",
+      "filesChecked": 83,
+      "filesFailing": 2,
+      "violations": [
+        {
+          "path": "src/build/CoverageSummary.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/benchmarks/Bench.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "commented-out-code",
+      "description": "Avoid commented-out code",
+      "filesChecked": 83,
+      "filesFailing": 5,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/HttpServerExchange.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/handlers/Compression.java",
+          "line": -1
+        },
+        {
+          "path": "src/main/java/httpserver/net/Connection.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/CompressionTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/HttpServerExchangeTest.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "todo-fixme",
+      "description": "No leftover TODO/FIXME/XXX markers",
+      "filesChecked": 83,
+      "filesFailing": 1,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/core/FormPart.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "hardcoded-secret",
+      "description": "Avoid hardcoded secrets/credentials",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "weak-hash",
+      "description": "Avoid weak hash algorithms (MD5/SHA1)",
+      "filesChecked": 83,
+      "filesFailing": 1,
+      "violations": [
+        {
+          "path": "src/main/java/httpserver/websocket/WebSocket.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "sql-concat",
+      "description": "Avoid SQL string concatenation",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "test-no-assertions",
+      "description": "Test methods should contain assertions",
+      "filesChecked": 83,
+      "filesFailing": 3,
+      "violations": [
+        {
+          "path": "src/test/java/unittests/FramesTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/HttpServerExchangeTest.java",
+          "line": -1
+        },
+        {
+          "path": "src/test/java/unittests/TokenSessionStoreTest.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "thread-sleep-test",
+      "description": "Avoid Thread.sleep in tests",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "ignored-test",
+      "description": "Avoid @Ignore/@Disabled tests",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "empty-test",
+      "description": "Avoid empty test methods",
+      "filesChecked": 83,
+      "filesFailing": 0,
+      "violations": []
+    },
+    {
+      "id": "unused-private",
+      "description": "Remove unused private fields/methods",
+      "filesChecked": 83,
+      "filesFailing": 1,
+      "violations": [
+        {
+          "path": "src/test/java/architecture/TestArchitecture.java",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "license",
+      "description": "Project must have a LICENSE file",
+      "filesChecked": 1,
+      "filesFailing": 1,
+      "violations": []
+    },
+    {
+      "id": "readme",
+      "description": "Project must have a README file",
+      "filesChecked": 1,
+      "filesFailing": 1,
+      "violations": []
+    },
+    {
+      "id": "build-file",
+      "description": "Project must have a build file (pom.xml or Gradle)",
+      "filesChecked": 1,
+      "filesFailing": 1,
+      "violations": []
+    },
+    {
+      "id": "too-many-deps",
+      "description": "Keep dependencies under 20",
+      "filesChecked": 1,
+      "filesFailing": 1,
+      "violations": []
+    },
+    {
+      "id": "snapshot-deps",
+      "description": "Avoid -SNAPSHOT/dynamic dependency versions",
+      "filesChecked": 1,
+      "filesFailing": 1,
+      "violations": []
+    },
+    {
+      "id": "missing-dep-version",
+      "description": "Every dependency should declare a version",
+      "filesChecked": 1,
+      "filesFailing": 1,
+      "violations": []
+    },
+    {
+      "id": "library-no-deps",
+      "description": "Libraries should have zero non-test dependencies (plugins exempt)",
+      "filesChecked": 1,
+      "filesFailing": 1,
+      "violations": []
+    },
+    {
+      "id": "single-class-package",
+      "description": "Packages should contain more than one file",
+      "filesChecked": 1,
+      "filesFailing": 1,
+      "violations": [
+        {
+          "path": "/home/jurgen/projects/libraries/httpserver",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "mixed-package",
+      "description": "A package should hold either files or sub-packages, not both",
+      "filesChecked": 1,
+      "filesFailing": 1,
+      "violations": [
+        {
+          "path": "/home/jurgen/projects/libraries/httpserver",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "package-too-large",
+      "description": "Keep packages under 30 classes",
+      "filesChecked": 1,
+      "filesFailing": 1,
+      "violations": []
+    },
+    {
+      "id": "circular-packages",
+      "description": "Avoid circular package dependencies",
+      "filesChecked": 1,
+      "filesFailing": 1,
+      "violations": [
+        {
+          "path": "/home/jurgen/projects/libraries/httpserver",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "long-inheritance",
+      "description": "Avoid inheritance chains deeper than 3",
+      "filesChecked": 1,
+      "filesFailing": 1,
+      "violations": []
+    },
+    {
+      "id": "no-tests",
+      "description": "Project should include tests",
+      "filesChecked": 1,
+      "filesFailing": 1,
+      "violations": []
+    },
+    {
+      "id": "test-ratio",
+      "description": "Keep a reasonable test-to-source ratio",
+      "filesChecked": 1,
+      "filesFailing": 1,
+      "violations": []
+    },
+    {
+      "id": "untested-classes",
+      "description": "Every main class should have a test",
+      "filesChecked": 1,
+      "filesFailing": 1,
+      "violations": [
+        {
+          "path": "/home/jurgen/projects/libraries/httpserver",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "test-assertion-ratio",
+      "description": "Test methods should contain at least 33% assertions",
+      "filesChecked": 1,
+      "filesFailing": 1,
+      "violations": [
+        {
+          "path": "/home/jurgen/projects/libraries/httpserver",
+          "line": -1
+        }
+      ]
+    },
+    {
+      "id": "duplicated-code",
+      "description": "Avoid duplicated code blocks across files",
+      "filesChecked": 1,
+      "filesFailing": 1,
+      "violations": [
+        {
+          "path": "/home/jurgen/projects/libraries/httpserver",
+          "line": -1
+        }
+      ]
+    }
+  ],
+  "metrics": [
+    {
+      "id": "loc",
+      "description": "Total physical lines",
+      "value": 10313
+    },
+    {
+      "id": "sloc",
+      "description": "Source lines, excluding blanks and comments",
+      "value": 6178
+    },
+    {
+      "id": "max-file-length",
+      "description": "Longest file, in lines",
+      "value": 751
+    },
+    {
+      "id": "cyclomatic-total",
+      "description": "Sum of cyclomatic complexity over all methods",
+      "value": 1197
+    },
+    {
+      "id": "cyclomatic-mean",
+      "description": "Mean cyclomatic complexity per method",
+      "value": 1.940032414910859
+    },
+    {
+      "id": "cyclomatic-max",
+      "description": "Highest cyclomatic complexity of any method",
+      "value": 23
+    },
+    {
+      "id": "max-nesting",
+      "description": "Deepest control-flow nesting, in blocks",
+      "value": 8
+    },
+    {
+      "id": "halstead-volume",
+      "description": "Halstead volume of the whole codebase",
+      "value": 177073.8373383355
+    },
+    {
+      "id": "total-imports",
+      "description": "Total import statements",
+      "value": 657
+    },
+    {
+      "id": "unique-imports",
+      "description": "Distinct import statements",
+      "value": 251
+    },
+    {
+      "id": "avg-imports-per-type",
+      "description": "Average import statements per top-level type",
+      "value": 7.9156626506024095
+    },
+    {
+      "id": "comment-ratio",
+      "description": "Comment lines, percent of all lines",
+      "value": 27.043537283040823
+    },
+    {
+      "id": "javadoc-coverage",
+      "description": "Public types and methods with Javadoc, percent",
+      "value": 52.17391304347826
+    },
+    {
+      "id": "parse-failure-rate",
+      "description": "Files that failed to parse, percent",
+      "value": 0
+    },
+    {
+      "id": "maintainability-index",
+      "description": "Maintainability index, 0-100",
+      "value": 96.71565428373306
+    },
+    {
+      "id": "package-instability",
+      "description": "Mean package instability Ce/(Ca+Ce), percent",
+      "value": 49.60842188114915
+    },
+    {
+      "id": "commits",
+      "description": "Commits in history",
+      "value": 80
+    },
+    {
+      "id": "churn",
+      "description": "Lines added and deleted across history",
+      "value": 20292
+    },
+    {
+      "id": "hotspot-index",
+      "description": "Highest churn times complexity of any file",
+      "value": 184280
+    },
+    {
+      "id": "test-methods",
+      "description": "Number of test methods",
+      "value": 201
+    },
+    {
+      "id": "test-assertions",
+      "description": "Assertion calls in test methods",
+      "value": 507
+    },
+    {
+      "id": "test-assertion-density",
+      "description": "Assertions per statement in test methods",
+      "value": 0.5847750865051903
+    }
+  ],
+  "categories": [
+    {
+      "name": "coverage",
+      "score": 79.0
+    },
+    {
+      "name": "documentation",
+      "score": 84.3
+    },
+    {
+      "name": "imports",
+      "score": 86.7
+    },
+    {
+      "name": "structure",
+      "score": 88.6
+    },
+    {
+      "name": "format",
+      "score": 91.4
+    },
+    {
+      "name": "style",
+      "score": 94.0
+    },
+    {
+      "name": "naming",
+      "score": 95.2
+    },
+    {
+      "name": "control flow",
+      "score": 95.4
+    },
+    {
+      "name": "design",
+      "score": 95.8
+    },
+    {
+      "name": "noise",
+      "score": 97.6
+    },
+    {
+      "name": "complexity",
+      "score": 97.7
+    },
+    {
+      "name": "dead code",
+      "score": 98.8
+    },
+    {
+      "name": "tests",
+      "score": 99.1
+    },
+    {
+      "name": "duplication",
+      "score": 99.6
+    },
+    {
+      "name": "security",
+      "score": 99.6
+    },
+    {
+      "name": "project",
+      "score": 100.0
+    },
+    {
+      "name": "dependencies",
+      "score": 100.0
+    },
+    {
+      "name": "library",
+      "score": 100.0
+    }
+  ]
+}
